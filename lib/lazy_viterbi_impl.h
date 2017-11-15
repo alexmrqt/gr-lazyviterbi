@@ -37,9 +37,16 @@ namespace gr {
       int d_K;
       int d_S0;
       int d_SK;
-      //List of already expanded nodes
+      /*
+       * Real nodes, to be addressed by expanded_nodes[time_index][state_index]
+       */
       std::vector<std::vector<node> > expanded_nodes;
-      //Shadow nodes min queue
+      /*
+       * Shadow nodes. First dimension is used to make a circular buffer of 256
+       * vectors (corresponding to the 256 possible values of branch metrics).
+       * The vector nested stores shadow_nodes whose incoming branch have same
+       * metrics.
+       */
       std::vector<std::vector<shadow_node> > shadow_nodes;
 
      public:
