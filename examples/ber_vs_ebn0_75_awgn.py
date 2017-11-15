@@ -14,6 +14,7 @@ from gnuradio.filter import firdes
 from grc_gnuradio import blks2 as grc_blks2
 import lazyviterbi_swig as lv
 
+import os
 import numpy
 import matplotlib.pyplot as plt
 
@@ -26,11 +27,11 @@ class ber_vs_ebn0_awgn(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.prefix = prefix = "/localdata/marqueal/Documents/sdr/lazy-viterbi/gr-lazyviterbi/examples/";
+        self.prefix = prefix = os.getcwd();
         self.noise_amp_dB = noise_amp_dB = -50;
         self.pkt_len = pkt_len;
-        #self.fsm = fsm = trellis.fsm(prefix + "awgn1o2_128.fsm");
-        self.fsm = fsm = trellis.fsm(prefix + "57.fsm");
+        #self.fsm = fsm = trellis.fsm(prefix + "/awgn1o2_128.fsm");
+        self.fsm = fsm = trellis.fsm(prefix + "/57.fsm");
         Rc=0.5;
         self.const = const = digital.constellation_bpsk().base();
 

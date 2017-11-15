@@ -14,6 +14,7 @@ from gnuradio.filter import firdes
 from grc_gnuradio import blks2 as grc_blks2
 import lazyviterbi_swig as lv
 
+import os
 import numpy
 import time
 import matplotlib.pyplot as plt
@@ -89,9 +90,9 @@ def main():
     bitrate_viterbi = numpy.zeros(len(EbN0dB));
     bitrate_lazy = numpy.zeros(len(EbN0dB));
 
-    prefix = "/localdata/marqueal/Documents/sdr/lazy-viterbi/gr-lazyviterbi/examples/";
-    #fsm = fsm = trellis.fsm(prefix + "57.fsm");
-    fsm = fsm = trellis.fsm(prefix + "awgn1o2_128.fsm");
+    prefix = os.getcwd();
+    #fsm = fsm = trellis.fsm(prefix + "/57.fsm");
+    fsm = fsm = trellis.fsm(prefix + "/awgn1o2_128.fsm");
     vit_dec = trellis.viterbi_b(trellis.fsm(fsm), pkt_len, 0, -1);
     lazy_dec = lv.lazy_viterbi(trellis.fsm(fsm), pkt_len, 0, -1);
 
