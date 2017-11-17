@@ -63,11 +63,10 @@ namespace gr {
 
       //Allocate expanded and shadow nodes containers
       shadow_nodes.resize(256);  //256=2^8=2^sizeof(uint8_t)
-      expanded_nodes.resize(d_K+2);
-      for(size_t i=0 ; i<(d_K+2) ; ++i) {
-        for(int s=0 ; s<d_FSM.S() ; ++s) {
-          expanded_nodes[i].push_back(new_node);
-        }
+      real_nodes.resize((d_K+2)*d_FSM.S());
+      //Set all real nodes to non-expanded
+      for(std::vector<node>::iterator it=real_nodes.begin() ; it != real_nodes.end() ; ++it) {
+        (*it).expanded=false;
       }
 
       set_relative_rate(1.0 / ((double)d_FSM.O()));
@@ -166,7 +165,7 @@ namespace gr {
       uint8_t min_dist_idx = 0;
       struct node new_node;
       struct shadow_node new_shadow, curr_shadow;
-      std::vector<node>::iterator expanded_state_it;
+      std::vector<node>::iterator expanded_it;
       std::vector<int>::const_iterator NS_it, OS_it;
 
       //If exist put initial node in the shadow queue,
@@ -206,34 +205,43 @@ namespace gr {
           //Retrieve a candidate at minimum distance
           curr_shadow = shadow_nodes[min_dist_idx].back();
           shadow_nodes[min_dist_idx].pop_back();
-        } while(expanded_nodes[curr_shadow.time_idx][curr_shadow.state_idx].expanded);
+
+          //Update iterator
+          expanded_it = real_nodes.begin() + curr_shadow.time_idx*d_FSM.S()
+            + curr_shadow.state_idx;
+        } while((*expanded_it).expanded);
 
         //At this point, we are sure curr_shadow will be expanded
-        expanded_nodes[curr_shadow.time_idx][curr_shadow.state_idx].expanded=true;
-        expanded_nodes[curr_shadow.time_idx][curr_shadow.state_idx].prev_input=curr_shadow.prev_input;
-        expanded_nodes[curr_shadow.time_idx][curr_shadow.state_idx].prev_state_idx=curr_shadow.prev_state_idx;
+        (*expanded_it).expanded=true;
+        (*expanded_it).prev_input=curr_shadow.prev_input;
+        (*expanded_it).prev_state_idx=curr_shadow.prev_state_idx;
 
-        //For all neighbors of curr_shadow
-        //Create neighbor node (pt 1)
+        //Scan all neighbors of the last expanded node
+        //Create a shadow neighbor node (pt 1)
         new_shadow.time_idx=curr_shadow.time_idx+1;
         new_shadow.prev_state_idx=curr_shadow.state_idx;
+
         //Initialize iterators
-        expanded_state_it=expanded_nodes[new_shadow.time_idx].begin();
-        metrics_os_it=metrics.begin()+curr_shadow.time_idx*O;
-        NS_it = NS.begin() + curr_shadow.state_idx*I;
-        OS_it = OS.begin() + curr_shadow.state_idx*I;
+        expanded_it=expanded_it + d_FSM.S() - curr_shadow.state_idx; //real_nodes[curr_shadow.time_idx*d_FSM.S()]
+        metrics_os_it=metrics.begin()+curr_shadow.time_idx*O; //metrics[curr_shadow.time_idx*O]
+        NS_it = NS.begin() + curr_shadow.state_idx*I; //NS[curr_shadow.state_idx*I]
+        OS_it = OS.begin() + curr_shadow.state_idx*I; //OS[curr_shadow.state_idx*I]
+
+        //For all neighbors
         for(int i=0 ; i < I ; ++i) {
-          //Create neighbor node (pt 2)
-          new_shadow.state_idx=*(NS_it++);
+          //Create a shadow neighbor node (pt 2)
+          new_shadow.state_idx=*NS_it;
           new_shadow.prev_input=i;
 
           //Add non-expanded neighbors as shadow nodes
-          if((*(expanded_state_it+new_shadow.state_idx)).expanded == false) {
+          if((*(expanded_it + new_shadow.state_idx)).expanded == false) {
             shadow_nodes[(uint8_t)(min_dist_idx
                 + *(metrics_os_it + *OS_it)
                 )].push_back(new_shadow);
           }
 
+          //Increment iterators
+          ++NS_it;
           ++OS_it;
         }
       } while(curr_shadow.time_idx != K && (SK == -1 || curr_shadow.state_idx == SK));
@@ -243,17 +251,16 @@ namespace gr {
       new_node.prev_state_idx = curr_shadow.prev_state_idx;
       for(int k=K-1 ; k >= 0 ; --k) {
         out[k] = (char)new_node.prev_input;
-        new_node = expanded_nodes[k][new_node.prev_state_idx];
+        new_node = real_nodes[k*d_FSM.S() + new_node.prev_state_idx];
       }
 
       //Clear expanded and shadow nodes containers
       for(size_t i=0 ; i<256 ; ++i) {
         shadow_nodes[i].clear();
       }
-      for(size_t i=0 ; i<(d_K+1) ; ++i) {
-        for(int s=0 ; s<d_FSM.S() ; ++s) {
-          expanded_nodes[i][s].expanded=false;
-        }
+
+      for(std::vector<node>::iterator it=real_nodes.begin() ; it != real_nodes.end() ; ++it) {
+        (*it).expanded=false;
       }
     }
 

@@ -38,9 +38,9 @@ namespace gr {
       int d_S0;
       int d_SK;
       /*
-       * Real nodes, to be addressed by expanded_nodes[time_index][state_index]
+       * Real nodes, to be addressed by real_nodes[time_index*d_FSM.S() + state_index]
        */
-      std::vector<std::vector<node> > expanded_nodes;
+      std::vector<node> real_nodes;
       /*
        * Shadow nodes. First dimension is used to make a circular buffer of 256
        * vectors (corresponding to the 256 possible values of branch metrics).
