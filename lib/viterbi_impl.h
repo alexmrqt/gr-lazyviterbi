@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2017-2018 Free Software Foundation, Inc.
+ * Copyright 2018 Free Software Foundation, Inc.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,39 +18,24 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_LAZYVITERBI_LAZY_VITERBI_IMPL_H
-#define INCLUDED_LAZYVITERBI_LAZY_VITERBI_IMPL_H
+#ifndef INCLUDED_LAZYVITERBI_VITERBI_IMPL_H
+#define INCLUDED_LAZYVITERBI_VITERBI_IMPL_H
 
-#include <boost/container/slist.hpp>
-#include <boost/container/stable_vector.hpp>
-
-#include <lazyviterbi/lazy_viterbi.h>
-#include "node.h"
+#include <lazyviterbi/viterbi.h>
 
 namespace gr {
   namespace lazyviterbi {
 
-    class lazy_viterbi_impl : public lazy_viterbi
+    class viterbi_impl : public viterbi
     {
      private:
       gr::trellis::fsm d_FSM;
       int d_K;
       int d_S0;
       int d_SK;
-      /*
-       * Real nodes, to be addressed by real_nodes[time_index*d_FSM.S() + state_index]
-       */
-      std::vector<node> real_nodes;
-      /*
-       * Shadow nodes. First dimension is used to make a circular buffer of 256
-       * vectors (corresponding to the 256 possible values of branch metrics).
-       * The vector nested stores shadow_nodes whose incoming branch have same
-       * metrics.
-       */
-      std::vector<std::vector<shadow_node> > shadow_nodes;
 
      public:
-      lazy_viterbi_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
+      viterbi_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
 
       gr::trellis::fsm FSM() const  { return d_FSM; }
       int K()  const { return d_K; }
@@ -67,15 +52,14 @@ namespace gr {
       int general_work(int noutput_items, gr_vector_int &ninput_items,
           gr_vector_const_void_star &input_items, gr_vector_void_star &output_items);
 
-      void lazy_viteri_metrics_norm(const float *in, uint8_t* metrics, int K, int O);
-
-      void lazy_viterbi_algorithm(int I, int S, int O, const std::vector<int> &NS,
-          const std::vector<int> &OS, int K, int S0, int SK, const float *in,
-          unsigned char *out);
+      void viterbi_algorithm(int I, int S, int O, const std::vector<int> &NS,
+          const std::vector<int> &OS, const std::vector< std::vector<int> > &PS,
+          const std::vector< std::vector<int> > &PI, int K, int S0, int SK,
+          const float *in, unsigned char *out);
     };
 
   } // namespace lazyviterbi
 } // namespace gr
 
-#endif /* INCLUDED_LAZYVITERBI_LAZY_VITERBI_IMPL_H */
+#endif /* INCLUDED_LAZYVITERBI_VITERBI_IMPL_H */
 

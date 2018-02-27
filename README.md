@@ -1,14 +1,19 @@
 # GNURadio implementation of the Lazy Viterbi algorithm.
 
-This module contains a single block which is a drop-in replacement for the Viterbi
-block of gr-trellis.
-It implements the Viterbi algorithm for decoding or equalization in the way described
+This module contains a three blocks, which are drop-in replacement for the Viterbi
+block of gr-trellis:
+* Lazy Viterbi: implements the Viterbi algorithm for decoding or equalization in the way described
 in Feldman, Jon & Abou-Faycal, Ibrahim & Frigo, Matteo. (2002).
 A Fast Maximum-Likelihood Decoder for Convolutional Codes. Vehicular Technology Conference, 1988, IEEE 38th.
 10.1109/VETECF.2002.1040367. 
-
 This implementation provides a significant speedup at moderate SNRs, but is slower
 at low SNR.
+* Viterbi: implements the classical Viterbi algorithm.
+This implementation, which is faster than the one present in gr-trellis, is
+better-suited than Lazy Viterbi for low SNRs.
+* Dynamic Viterbi: Switch between the two implementations mentionned above,
+depending on SNR.
+
 
 One GRC example is provided in the examples/ directory.
 There are also two python scripts :

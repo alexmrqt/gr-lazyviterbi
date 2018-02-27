@@ -24,10 +24,10 @@ include(GrPlatform) #define LIB_SUFFIX
 
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
-
 list(APPEND lazyviterbi_sources
     lazy_viterbi_impl.cc
-)
+    dynamic_viterbi_impl.cc
+    viterbi_impl.cc )
 
 set(lazyviterbi_sources "${lazyviterbi_sources}" PARENT_SCOPE)
 if(NOT lazyviterbi_sources)

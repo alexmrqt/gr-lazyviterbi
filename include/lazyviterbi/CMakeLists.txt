@@ -22,5 +22,7 @@
 ########################################################################
 install(FILES
     api.h
-    lazy_viterbi.h DESTINATION include/lazyviterbi
+    lazy_viterbi.h
+    dynamic_viterbi.h
+    viterbi.h DESTINATION include/lazyviterbi
 )

@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2017 Free Software Foundation, Inc.
+ * Copyright 2017-2018 Free Software Foundation, Inc.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ namespace gr {
 
       //Allocate expanded and shadow nodes containers
       shadow_nodes.resize(256);  //256=2^8=2^sizeof(uint8_t)
-      real_nodes.resize((d_K+2)*d_FSM.S());
+      real_nodes.resize((d_K+1)*d_FSM.S());
       //Set all real nodes to non-expanded
       for(std::vector<node>::iterator it=real_nodes.begin() ; it != real_nodes.end() ; ++it) {
         (*it).expanded=false;
@@ -78,6 +78,13 @@ namespace gr {
     {
       gr::thread::scoped_lock guard(d_setlock);
       d_FSM = FSM;
+      //Reallocate shadow nodes containers
+      real_nodes.resize((d_K+1)*d_FSM.S());
+      //Set all real nodes to non-expanded
+      for(std::vector<node>::iterator it=real_nodes.begin() ; it != real_nodes.end() ; ++it) {
+        (*it).expanded=false;
+      }
+
       set_relative_rate(1.0 / ((double)d_FSM.O()));
     }
 
@@ -85,7 +92,15 @@ namespace gr {
     lazy_viterbi_impl::set_K(int K)
     {
       gr::thread::scoped_lock guard(d_setlock);
+
       d_K = K;
+      //Reallocate shadow nodes containers
+      real_nodes.resize((d_K+1)*d_FSM.S());
+      //Set all real nodes to non-expanded
+      for(std::vector<node>::iterator it=real_nodes.begin() ; it != real_nodes.end() ; ++it) {
+        (*it).expanded=false;
+      }
+
       set_output_multiple(d_K);
     }
 
@@ -125,7 +140,7 @@ namespace gr {
 
       for(int m = 0; m < nstreams; m++) {
         const float *in = (const float*)input_items[m];
-        char *out = (char*)output_items[m];
+        unsigned char *out = (unsigned char*)output_items[m];
 
         for(int n = 0; n < nblocks; n++) {
           lazy_viterbi_algorithm(d_FSM.I(), d_FSM.S(), d_FSM.O(), d_FSM.NS(),
@@ -137,27 +152,31 @@ namespace gr {
       return noutput_items;
     }
 
+    struct minus_cast : public std::binary_function<float, float, uint8_t> {
+        uint8_t operator() (float a, float b) const {return (uint8_t)(a-b);}
+    };
+
     void
     lazy_viterbi_impl::lazy_viteri_metrics_norm(const float *in, uint8_t* metrics,
         int K, int O)
     {
       float min_metric = 0;
 
-      for(int k=0 ; k < K ; ++k) {
+      for(float *in_k=(float*)in ; in_k < in + K*O ; in_k += O) {
         //Find min_element
-        min_metric=*std::min_element(in, in+O);
+        min_metric=*std::min_element(in_k, in_k+O);
 
         //Remove it from metrics
-        for(int j=0 ; j<O ; ++j) {
-          *(metrics++) = (uint8_t)(*(in++) - min_metric);
-        }
+        std::transform(in_k, in_k+O, metrics, std::bind2nd(minus_cast(), min_metric));
+
+        metrics += O;
       }
     }
 
     void
     lazy_viterbi_impl::lazy_viterbi_algorithm(int I, int S, int O, const std::vector<int> &NS,
         const std::vector<int> &OS, int K, int S0, int SK, const float *in,
-        char *out)
+        unsigned char *out)
     {
       //***INIT***//
       std::vector<uint8_t> metrics(K*O);
@@ -207,7 +226,7 @@ namespace gr {
           shadow_nodes[min_dist_idx].pop_back();
 
           //Update iterator
-          expanded_it = real_nodes.begin() + curr_shadow.time_idx*d_FSM.S()
+          expanded_it = real_nodes.begin() + curr_shadow.time_idx*S
             + curr_shadow.state_idx;
         } while((*expanded_it).expanded);
 
@@ -222,8 +241,8 @@ namespace gr {
         new_shadow.prev_state_idx=curr_shadow.state_idx;
 
         //Initialize iterators
-        expanded_it=expanded_it + d_FSM.S() - curr_shadow.state_idx; //real_nodes[curr_shadow.time_idx*d_FSM.S()]
-        metrics_os_it=metrics.begin()+curr_shadow.time_idx*O; //metrics[curr_shadow.time_idx*O]
+        expanded_it += S - curr_shadow.state_idx; //real_nodes[curr_shadow.time_idx*S]
+        metrics_os_it = metrics.begin() + curr_shadow.time_idx*O; //metrics[curr_shadow.time_idx*O]
         NS_it = NS.begin() + curr_shadow.state_idx*I; //NS[curr_shadow.state_idx*I]
         OS_it = OS.begin() + curr_shadow.state_idx*I; //OS[curr_shadow.state_idx*I]
 
@@ -249,9 +268,12 @@ namespace gr {
       //***TRACEBACK***//
       new_node.prev_input = curr_shadow.prev_input;
       new_node.prev_state_idx = curr_shadow.prev_state_idx;
-      for(int k=K-1 ; k >= 0 ; --k) {
-        out[k] = (char)new_node.prev_input;
-        new_node = real_nodes[k*d_FSM.S() + new_node.prev_state_idx];
+      expanded_it = real_nodes.begin() + (K-1)*S; //Place expanded_it at the last time index
+      for(unsigned char* out_k=out + K-1 ; out_k >= out ; --out_k) {
+        *out_k = (unsigned char)new_node.prev_input;
+        new_node = *(expanded_it + new_node.prev_state_idx);
+
+        expanded_it -= S;
       }
 
       //Clear expanded and shadow nodes containers

@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<block>
+  <name>Viterbi</name>
+  <key>lazyviterbi_viterbi</key>
+  <category>[lazyviterbi]</category>
+  <import>import lazyviterbi</import>
+  <make>lazyviterbi.viterbi(trellis.fsm($fsm_args), $block_size, $init_state, $final_state)</make>
+  <param>
+    <name>FSM Args</name>
+    <key>fsm_args</key>
+    <type>raw</type>
+  </param>
+  <param>
+    <name>Block Size</name>
+    <key>block_size</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Initial State</name>
+    <key>init_state</key>
+    <value>0</value>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Final State</name>
+    <key>final_state</key>
+    <value>-1</value>
+    <type>int</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>float</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+  <doc>
+	Viterbi Decoder. \
+	The fsm arguments are passed directly to the trellis.fsm() constructor. \
+	Block size is the length of the sequence taken into account for decoding. \
+	Initial state must contain the initial state of the encoder (-1 if unknown). \
+	Final state must contain the final state of the encoder (-1 if unknown).
+  </doc>
+</block>

@@ -30,8 +30,10 @@ class ber_vs_ebn0_awgn(gr.top_block):
         self.prefix = prefix = os.getcwd();
         self.noise_amp_dB = noise_amp_dB = -50;
         self.pkt_len = pkt_len;
-        #self.fsm = fsm = trellis.fsm(prefix + "/awgn1o2_128.fsm");
-        self.fsm = fsm = trellis.fsm(prefix + "/57.fsm");
+        #self.fsm = fsm = trellis.fsm(prefix + "/fsm/229_159.fsm");
+        #self.fsm = fsm = trellis.fsm(prefix + "/fsm/rsc_15_13.fsm");
+        #self.fsm = fsm = trellis.fsm(prefix + "/fsm/171_133.fsm");
+        self.fsm = fsm = trellis.fsm(prefix + "/fsm/5_7.fsm");
         Rc=0.5;
         self.const = const = digital.constellation_bpsk().base();
 
@@ -55,20 +57,20 @@ class ber_vs_ebn0_awgn(gr.top_block):
 
         self.metrics_computer = trellis.metrics_c(4, 2, ([-1, -1, -1, 1, 1, -1, 1, 1]), digital.TRELLIS_EUCLIDEAN);
 
-        self.viterbi = trellis.viterbi_b(trellis.fsm(fsm), pkt_len, 0, -1);
-        #self.dijkstra = djbk.dijkstra_gr_block(trellis.fsm(fsm), pkt_len, 0, -1);
+        self.trellis_viterbi = trellis.viterbi_b(trellis.fsm(fsm), pkt_len, 0, -1);
+        self.viterbi = lv.viterbi(trellis.fsm(fsm), pkt_len, 0, -1);
         self.lazy = lv.lazy_viterbi(trellis.fsm(fsm), pkt_len, 0, -1);
 
+        self.pack_trellis_viterbi = blocks.pack_k_bits_bb(8);
         self.pack_viterbi = blocks.pack_k_bits_bb(8);
-        #self.pack_dijkstra = blocks.pack_k_bits_bb(8);
         self.pack_lazy = blocks.pack_k_bits_bb(8);
 
+        self.ber_computer_trellis_viterbi = fec.ber_bf(False);
         self.ber_computer_viterbi = fec.ber_bf(False);
-        #self.ber_computer_dijkstra = fec.ber_bf(False);
         self.ber_computer_lazy = fec.ber_bf(False);
 
+        self.vector_sink_trellis_viterbi = blocks.vector_sink_f();
         self.vector_sink_viterbi = blocks.vector_sink_f();
-        #self.vector_sink_dijkstra = blocks.vector_sink_f();
         self.vector_sink_lazy = blocks.vector_sink_f();
 
         ##################################################
@@ -83,33 +85,34 @@ class ber_vs_ebn0_awgn(gr.top_block):
         self.connect((self.noise_src, 0), (self.noise_adder, 1));
         self.connect((self.noise_adder, 0), (self.metrics_computer, 0));
 
+        self.connect((self.metrics_computer, 0), (self.trellis_viterbi, 0));
         self.connect((self.metrics_computer, 0), (self.viterbi, 0));
-        #self.connect((self.metrics_computer, 0), (self.dijkstra, 0));
         self.connect((self.metrics_computer, 0), (self.lazy, 0));
 
         self.connect((self.bits_src, 0), (self.pack_src, 0));
+        self.connect((self.trellis_viterbi, 0), (self.pack_trellis_viterbi, 0));
         self.connect((self.viterbi, 0), (self.pack_viterbi, 0));
-        #self.connect((self.dijkstra, 0), (self.pack_dijkstra, 0));
         self.connect((self.lazy, 0), (self.pack_lazy, 0));
 
+        self.connect((self.pack_src, 0), (self.ber_computer_trellis_viterbi, 0));
         self.connect((self.pack_src, 0), (self.ber_computer_viterbi, 0));
-        #self.connect((self.pack_src, 0), (self.ber_computer_dijkstra, 0));
         self.connect((self.pack_src, 0), (self.ber_computer_lazy, 0));
+
+        self.connect((self.pack_trellis_viterbi, 0), (self.ber_computer_trellis_viterbi, 1));
         self.connect((self.pack_viterbi, 0), (self.ber_computer_viterbi, 1));
-        #self.connect((self.pack_dijkstra, 0), (self.ber_computer_dijkstra, 1));
         self.connect((self.pack_lazy, 0), (self.ber_computer_lazy, 1));
 
-        #self.connect((self.ber_computer_dijkstra, 0), (self.vector_sink_dijkstra, 0));
+        self.connect((self.ber_computer_trellis_viterbi, 0), (self.vector_sink_trellis_viterbi, 0));
         self.connect((self.ber_computer_viterbi, 0), (self.vector_sink_viterbi, 0));
         self.connect((self.ber_computer_lazy, 0), (self.vector_sink_lazy, 0));
 
 def main():
     pkt_len = 16384;
     nb_pkt=100;
-    #EbN0dB = [0];
+    #EbN0dB = [10];
     EbN0dB = numpy.linspace(0, 10, 11);
+    BER_trellis_viterbi = numpy.zeros(len(EbN0dB));
     BER_viterbi = numpy.zeros(len(EbN0dB));
-    #BER_dijkstra = numpy.zeros(len(EbN0dB));
     BER_lazy = numpy.zeros(len(EbN0dB));
 
     for i in range(0, len(EbN0dB)):
@@ -119,15 +122,15 @@ def main():
         tb = ber_vs_ebn0_awgn(pkt_len, nb_pkt, EbN0dB[i]);
         tb.run();
 
-        print "BER Viterbi:",
+        print "BER Viterbi (gr-trellis):",
+        print tb.vector_sink_trellis_viterbi.data();
+        BER_trellis_viterbi[i] = 10**(numpy.mean(tb.vector_sink_trellis_viterbi.data()));
+        tb.vector_sink_trellis_viterbi.reset();
+
+        print "BER Viterbi (gr-lazyviterbi):",
         print tb.vector_sink_viterbi.data();
         BER_viterbi[i] = 10**(numpy.mean(tb.vector_sink_viterbi.data()));
         tb.vector_sink_viterbi.reset();
-
-        #print "BER Dijkstra:",
-        #print tb.vector_sink_dijkstra.data();
-        #BER_dijkstra[i] = 10**(numpy.mean(tb.vector_sink_dijkstra.data()));
-        #tb.vector_sink_dijkstra.reset();
 
         print "BER Lazy:",
         print tb.vector_sink_lazy.data();
@@ -137,8 +140,9 @@ def main():
         print ""
 
     #Plot results
-    viterbi_plot = plt.semilogy(EbN0dB, BER_viterbi, '-+', label="Viterbi");
-    #dijkstra_plot = plt.semilogy(EbN0dB, BER_dijkstra, '-*', label="Dijkstra");
+    trellis_viterbi_plot = plt.semilogy(EbN0dB, BER_trellis_viterbi, '-*',
+            label="Viterbi (gr-trellis)");
+    viterbi_plot = plt.semilogy(EbN0dB, BER_viterbi, '-+', label="Viterbi (gr-lazyviterbi)");
     lazy_plot = plt.semilogy(EbN0dB, BER_lazy, '-x', label="Lazy");
 
     plt.grid(which='both');

@@ -87,13 +87,20 @@ def main():
     #pkt_len = 32768;
     nb_pkt=100;
     EbN0dB = numpy.linspace(0, 10, 11);
+    bitrate_trellis_viterbi = numpy.zeros(len(EbN0dB));
     bitrate_viterbi = numpy.zeros(len(EbN0dB));
     bitrate_lazy = numpy.zeros(len(EbN0dB));
+    bitrate_dynamic = numpy.zeros(len(EbN0dB));
 
     prefix = os.getcwd();
-    #fsm = fsm = trellis.fsm(prefix + "/57.fsm");
-    fsm = fsm = trellis.fsm(prefix + "/awgn1o2_128.fsm");
-    vit_dec = trellis.viterbi_b(trellis.fsm(fsm), pkt_len, 0, -1);
+    #fsm = fsm = trellis.fsm(prefix + "/fsm/5_7.fsm");
+    #fsm = fsm = trellis.fsm(prefix + "/fsm/229_159.fsm");
+    fsm = fsm = trellis.fsm(prefix + "/fsm/rsc_15_13.fsm");
+    #fsm = fsm = trellis.fsm(prefix + "/fsm/171_133.fsm");
+
+    trellis_vit_dec = trellis.viterbi_b(trellis.fsm(fsm), pkt_len, 0, -1);
+    vit_dec = lv.viterbi(trellis.fsm(fsm), pkt_len, 0, -1);
+    dyn_vit_dec = lv.dynamic_viterbi(trellis.fsm(fsm), pkt_len, 0, -1);
     lazy_dec = lv.lazy_viterbi(trellis.fsm(fsm), pkt_len, 0, -1);
 
     for i in range(0, len(EbN0dB)):
@@ -106,7 +113,18 @@ def main():
 
         metrics=tb.dst.data();
 
-        #Viterbi
+        #Viterbi (gr-trellis)
+        tb = ber_vs_ebn0_awgn(metrics, trellis_vit_dec);
+
+        start_time=time.time();
+        tb.run();
+        elapsed_time=time.time() - start_time;
+
+        bitrate_trellis_viterbi[i] = pkt_len*nb_pkt/elapsed_time;
+        print "Bitrate Viterbi (gr-trellis):\t",
+        print bitrate_trellis_viterbi[i]
+
+        #Viterbi (gr-lazyviterbi)
         tb = ber_vs_ebn0_awgn(metrics, vit_dec);
 
         start_time=time.time();
@@ -114,7 +132,7 @@ def main():
         elapsed_time=time.time() - start_time;
 
         bitrate_viterbi[i] = pkt_len*nb_pkt/elapsed_time;
-        print "Bitrate Viterbi:\t",
+        print "Bitrate Viterbi (gr-lazyviterbi):\t",
         print bitrate_viterbi[i]
 
         #Lazy Viterbi
@@ -128,11 +146,24 @@ def main():
         print "Bitrate Lazy:\t\t",
         print bitrate_lazy[i]
 
+        #Dynamic Viterbi
+        tb = ber_vs_ebn0_awgn(metrics, dyn_vit_dec);
+
+        start_time=time.time();
+        tb.run();
+        elapsed_time=time.time() - start_time;
+
+        bitrate_dynamic[i] = pkt_len*nb_pkt/elapsed_time;
+        print "Bitrate Dynamic:\t\t",
+        print bitrate_dynamic[i]
+
         print ""
 
     #Plot results
-    viterbi_plot = plt.plot(EbN0dB, bitrate_viterbi, '-+', label="Viterbi");
+    trellis_viterbi_plot = plt.plot(EbN0dB, bitrate_trellis_viterbi, '-*', label="Viterbi (gr-trellis)");
+    viterbi_plot = plt.plot(EbN0dB, bitrate_viterbi, '-+', label="Viterbi (gr-lazyviterbi)");
     lazy_plot = plt.plot(EbN0dB, bitrate_lazy, '-x', label="Lazy");
+    dynamic_viterbi_plot = plt.plot(EbN0dB, bitrate_dynamic, '-o', label="Dynamic");
 
     plt.grid(which='both');
     plt.ylabel('Bitrate (bps)');
