@@ -1,22 +1,16 @@
-title: LAZY-VITERBI Algorithm
-brief: A quicker viterbi algorithm.
+title: The LAZYVITERBI OOT Module
+brief: Short description of gr-lazyviterbi
 tags: # Tags are arbitrary, but look at CGRAN what other authors are using
-  - sdr, Viterbi
+  - sdr
 author:
-  - Alexandre Marquet.
+  - Author Name <authors@email.address>
 copyright_owner:
-  - Free Software Foundation, Inc.
+  - Copyright Owner 1
 license:
-#repo:
-#website:
-#icon:
+#repo: # Put the URL of the repository here, or leave blank for default
+#website: <module_website> # If you have a separate project website, put it here
+#icon: <icon_url> # Put a URL to a square image here that will be used as an icon on CGRAN
 ---
-This module contains a single block which is a drop-in replacement for the Viterbi
-block of gr-trellis.
-It implements the Viterbi algorithm for decoding or equalization in the way described
-in Feldman, Jon & Abou-Faycal, Ibrahim & Frigo, Matteo. (2002).
-A Fast Maximum-Likelihood Decoder for Convolutional Codes. Vehicular Technology Conference, 1988, IEEE 38th.
-10.1109/VETECF.2002.1040367. 
-
-This implementation provides a significant speedup at moderate SNRs, but is slower
-at low SNR.
+A longer, multi-line description of gr-lazyviterbi.
+You may use some *basic* Markdown here.
+If left empty, it will try to find a README file instead.

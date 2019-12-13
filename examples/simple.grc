@@ -1,2576 +1,829 @@
-<?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.12'?>
-<flow_graph>
-  <timestamp>Wed Nov 15 00:01:03 2017</timestamp>
-  <block>
-    <key>options</key>
-    <param>
-      <key>author</key>
-      <value></value>
-    </param>
-    <param>
-      <key>window_size</key>
-      <value></value>
-    </param>
-    <param>
-      <key>category</key>
-      <value>[GRC Hier Blocks]</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>description</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(8, 8)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>generate_options</key>
-      <value>qt_gui</value>
-    </param>
-    <param>
-      <key>hier_block_src_path</key>
-      <value>.:</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>top_block</value>
-    </param>
-    <param>
-      <key>max_nouts</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>qt_qss_theme</key>
-      <value></value>
-    </param>
-    <param>
-      <key>realtime_scheduling</key>
-      <value></value>
-    </param>
-    <param>
-      <key>run_command</key>
-      <value>{python} -u {filename}</value>
-    </param>
-    <param>
-      <key>run_options</key>
-      <value>prompt</value>
-    </param>
-    <param>
-      <key>run</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>sizing_mode</key>
-      <value>fixed</value>
-    </param>
-    <param>
-      <key>thread_safe_setters</key>
-      <value></value>
-    </param>
-    <param>
-      <key>title</key>
-      <value></value>
-    </param>
-    <param>
-      <key>placement</key>
-      <value>(0,0)</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(192, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>base_dir</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>"PATH TO MODULE DIRECTORY"</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(392, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>fsm</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>trellis.fsm(base_dir+"/examples/fsm/5_7.fsm")</value>
-    </param>
-  </block>
-  <block>
-    <key>variable_qtgui_range</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(192, 76)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>noise_amp</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value></value>
-    </param>
-    <param>
-      <key>min_len</key>
-      <value>200</value>
-    </param>
-    <param>
-      <key>orient</key>
-      <value>Qt.Horizontal</value>
-    </param>
-    <param>
-      <key>start</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>step</key>
-      <value>0.1</value>
-    </param>
-    <param>
-      <key>stop</key>
-      <value>10</value>
-    </param>
-    <param>
-      <key>rangeType</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>widget</key>
-      <value>counter_slider</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(8, 160)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>samp_rate</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>32000</value>
-    </param>
-  </block>
-  <block>
-    <key>analog_noise_source_x</key>
-    <param>
-      <key>amp</key>
-      <value>noise_amp</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(792, 188)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>analog_noise_source_x_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>noise_type</key>
-      <value>analog.GR_GAUSSIAN</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>seed</key>
-      <value>0</value>
-    </param>
-  </block>
-  <block>
-    <key>analog_random_source_x</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(32, 268)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>analog_random_source_x_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>max</key>
-      <value>2</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>min</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>num_samps</key>
-      <value>10000</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>byte</value>
-    </param>
-    <param>
-      <key>repeat</key>
-      <value>True</value>
-    </param>
-  </block>
-  <block>
-    <key>blks2_error_rate</key>
-    <param>
-      <key>bits_per_symbol</key>
-      <value>2</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(888, 436)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blks2_error_rate_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>'SER'</value>
-    </param>
-    <param>
-      <key>win_size</key>
-      <value>1000</value>
-    </param>
-  </block>
-  <block>
-    <key>blks2_error_rate</key>
-    <param>
-      <key>bits_per_symbol</key>
-      <value>2</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(888, 536)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blks2_error_rate_0_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>'SER'</value>
-    </param>
-    <param>
-      <key>win_size</key>
-      <value>1000</value>
-    </param>
-  </block>
-  <block>
-    <key>blks2_error_rate</key>
-    <param>
-      <key>bits_per_symbol</key>
-      <value>2</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(888, 632)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blks2_error_rate_0_0_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>'SER'</value>
-    </param>
-    <param>
-      <key>win_size</key>
-      <value>1000</value>
-    </param>
-  </block>
-  <block>
-    <key>blks2_error_rate</key>
-    <param>
-      <key>bits_per_symbol</key>
-      <value>2</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(888, 728)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blks2_error_rate_0_0_0_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>'SER'</value>
-    </param>
-    <param>
-      <key>win_size</key>
-      <value>1000</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_add_const_vxx</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>const</key>
-      <value>-1</value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(848, 292)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_add_const_vxx_0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_add_xx</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(984, 264)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_add_xx_0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>num_inputs</key>
-      <value>2</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_char_to_float</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(560, 292)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_char_to_float_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>scale</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_delay</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>delay</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(776, 468)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_delay_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>num_ports</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>byte</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_delay</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>delay</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(784, 564)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_delay_0_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>num_ports</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>byte</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_delay</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>delay</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(784, 668)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_delay_0_0_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>num_ports</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>byte</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_delay</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>delay</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(784, 772)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_delay_0_0_0_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>num_ports</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>byte</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_multiply_const_vxx</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>const</key>
-      <value>2</value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(696, 292)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_multiply_const_vxx_0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_throttle</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(1080, 276)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_throttle_0</value>
-    </param>
-    <param>
-      <key>ignoretag</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>samples_per_second</key>
-      <value>samp_rate</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_unpack_k_bits_bb</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(424, 292)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_unpack_k_bits_bb_0</value>
-    </param>
-    <param>
-      <key>k</key>
-      <value>2</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-  </block>
-  <block>
-    <key>lazyviterbi_dynamic_viterbi</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>block_size</key>
-      <value>1024</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>fsm_args</key>
-      <value>fsm</value>
-    </param>
-    <param>
-      <key>final_state</key>
-      <value>-1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(288, 736)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>lazyviterbi_dynamic_viterbi_0</value>
-    </param>
-    <param>
-      <key>init_state</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>thres</key>
-      <value>15.0</value>
-    </param>
-  </block>
-  <block>
-    <key>lazyviterbi_lazy_viterbi</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>block_size</key>
-      <value>1024</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>fsm_args</key>
-      <value>fsm</value>
-    </param>
-    <param>
-      <key>final_state</key>
-      <value>-1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(288, 428)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>lazyviterbi_lazy_viterbi_0</value>
-    </param>
-    <param>
-      <key>init_state</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-  </block>
-  <block>
-    <key>lazyviterbi_viterbi</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>block_size</key>
-      <value>1024</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>fsm_args</key>
-      <value>fsm</value>
-    </param>
-    <param>
-      <key>final_state</key>
-      <value>-1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(288, 632)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>lazyviterbi_viterbi_0</value>
-    </param>
-    <param>
-      <key>init_state</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-  </block>
-  <block>
-    <key>qtgui_number_sink</key>
-    <param>
-      <key>autoscale</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>avg</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(1088, 428)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value>1,1</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>graph_type</key>
-      <value>qtgui.NUM_GRAPH_VERT</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>qtgui_number_sink_0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>color1</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor1</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label1</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit1</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color10</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor10</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label10</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit10</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color2</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor2</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label2</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit2</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color3</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor3</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label3</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit3</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color4</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor4</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label4</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit4</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color5</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor5</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label5</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit5</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color6</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor6</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label6</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit6</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color7</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor7</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label7</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit7</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color8</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor8</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label8</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit8</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color9</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor9</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label9</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit9</key>
-      <value></value>
-    </param>
-    <param>
-      <key>max</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>min</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>name</key>
-      <value>"Lazy"</value>
-    </param>
-    <param>
-      <key>nconnections</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>update_time</key>
-      <value>0.10</value>
-    </param>
-  </block>
-  <block>
-    <key>qtgui_number_sink</key>
-    <param>
-      <key>autoscale</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>avg</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(1088, 524)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value>1,2</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>graph_type</key>
-      <value>qtgui.NUM_GRAPH_VERT</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>qtgui_number_sink_0_0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>color1</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor1</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label1</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit1</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color10</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor10</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label10</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit10</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color2</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor2</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label2</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit2</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color3</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor3</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label3</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit3</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color4</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor4</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label4</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit4</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color5</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor5</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label5</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit5</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color6</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor6</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label6</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit6</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color7</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor7</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label7</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit7</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color8</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor8</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label8</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit8</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color9</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor9</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label9</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit9</key>
-      <value></value>
-    </param>
-    <param>
-      <key>max</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>min</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>name</key>
-      <value>"Standard (gr-trellis)"</value>
-    </param>
-    <param>
-      <key>nconnections</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>update_time</key>
-      <value>0.10</value>
-    </param>
-  </block>
-  <block>
-    <key>qtgui_number_sink</key>
-    <param>
-      <key>autoscale</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>avg</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(1088, 624)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value>1,3</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>graph_type</key>
-      <value>qtgui.NUM_GRAPH_VERT</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>qtgui_number_sink_0_0_0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>color1</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor1</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label1</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit1</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color10</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor10</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label10</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit10</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color2</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor2</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label2</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit2</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color3</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor3</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label3</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit3</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color4</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor4</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label4</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit4</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color5</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor5</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label5</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit5</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color6</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor6</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label6</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit6</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color7</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor7</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label7</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit7</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color8</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor8</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label8</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit8</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color9</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor9</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label9</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit9</key>
-      <value></value>
-    </param>
-    <param>
-      <key>max</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>min</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>name</key>
-      <value>"Standard (gr-lazyviterbi)"</value>
-    </param>
-    <param>
-      <key>nconnections</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>update_time</key>
-      <value>0.10</value>
-    </param>
-  </block>
-  <block>
-    <key>qtgui_number_sink</key>
-    <param>
-      <key>autoscale</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>avg</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(1088, 720)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value>1,4</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>graph_type</key>
-      <value>qtgui.NUM_GRAPH_VERT</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>qtgui_number_sink_0_0_0_0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>color1</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor1</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label1</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit1</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color10</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor10</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label10</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit10</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color2</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor2</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label2</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit2</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color3</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor3</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label3</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit3</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color4</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor4</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label4</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit4</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color5</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor5</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label5</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit5</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color6</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor6</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label6</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit6</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color7</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor7</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label7</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit7</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color8</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor8</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label8</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit8</key>
-      <value></value>
-    </param>
-    <param>
-      <key>color9</key>
-      <value>("black", "black")</value>
-    </param>
-    <param>
-      <key>factor9</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>label9</key>
-      <value></value>
-    </param>
-    <param>
-      <key>unit9</key>
-      <value></value>
-    </param>
-    <param>
-      <key>max</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>min</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>name</key>
-      <value>"Dynamic"</value>
-    </param>
-    <param>
-      <key>nconnections</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>update_time</key>
-      <value>0.10</value>
-    </param>
-  </block>
-  <block>
-    <key>trellis_encoder_xx</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>blocklength</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>blockwise</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>fsm_args</key>
-      <value>fsm</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(200, 284)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>trellis_encoder_xx_0</value>
-    </param>
-    <param>
-      <key>init_state</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>bb</value>
-    </param>
-  </block>
-  <block>
-    <key>trellis_metrics_x</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>table</key>
-      <value>[-1, -1, -1, 1, 1, -1, 1, 1]</value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>dim</key>
-      <value>fsm.I()</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(80, 428)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>trellis_metrics_x_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>metric_type</key>
-      <value>digital.TRELLIS_EUCLIDEAN</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>card</key>
-      <value>fsm.O()</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>f</value>
-    </param>
-  </block>
-  <block>
-    <key>trellis_viterbi_x</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>block_size</key>
-      <value>1024</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>fsm_args</key>
-      <value>fsm</value>
-    </param>
-    <param>
-      <key>final_state</key>
-      <value>-1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(288, 532)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>trellis_viterbi_x_0</value>
-    </param>
-    <param>
-      <key>init_state</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>b</value>
-    </param>
-  </block>
-  <block>
-    <key>virtual_sink</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(208, 204)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>virtual_sink_0</value>
-    </param>
-    <param>
-      <key>stream_id</key>
-      <value>msg</value>
-    </param>
-  </block>
-  <block>
-    <key>virtual_source</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(720, 412)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>virtual_source_0</value>
-    </param>
-    <param>
-      <key>stream_id</key>
-      <value>msg</value>
-    </param>
-  </block>
-  <connection>
-    <source_block_id>analog_noise_source_x_0</source_block_id>
-    <sink_block_id>blocks_add_xx_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>analog_random_source_x_0</source_block_id>
-    <sink_block_id>trellis_encoder_xx_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>analog_random_source_x_0</source_block_id>
-    <sink_block_id>virtual_sink_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blks2_error_rate_0</source_block_id>
-    <sink_block_id>qtgui_number_sink_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blks2_error_rate_0_0</source_block_id>
-    <sink_block_id>qtgui_number_sink_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blks2_error_rate_0_0_0</source_block_id>
-    <sink_block_id>qtgui_number_sink_0_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blks2_error_rate_0_0_0_0</source_block_id>
-    <sink_block_id>qtgui_number_sink_0_0_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_add_const_vxx_0</source_block_id>
-    <sink_block_id>blocks_add_xx_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>1</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_add_xx_0</source_block_id>
-    <sink_block_id>blocks_throttle_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_char_to_float_0</source_block_id>
-    <sink_block_id>blocks_multiply_const_vxx_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_delay_0</source_block_id>
-    <sink_block_id>blks2_error_rate_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>1</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_delay_0_0</source_block_id>
-    <sink_block_id>blks2_error_rate_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>1</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_delay_0_0_0</source_block_id>
-    <sink_block_id>blks2_error_rate_0_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>1</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_delay_0_0_0_0</source_block_id>
-    <sink_block_id>blks2_error_rate_0_0_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>1</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_multiply_const_vxx_0</source_block_id>
-    <sink_block_id>blocks_add_const_vxx_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_throttle_0</source_block_id>
-    <sink_block_id>trellis_metrics_x_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_unpack_k_bits_bb_0</source_block_id>
-    <sink_block_id>blocks_char_to_float_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>lazyviterbi_dynamic_viterbi_0</source_block_id>
-    <sink_block_id>blocks_delay_0_0_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>lazyviterbi_lazy_viterbi_0</source_block_id>
-    <sink_block_id>blocks_delay_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>lazyviterbi_viterbi_0</source_block_id>
-    <sink_block_id>blocks_delay_0_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>trellis_encoder_xx_0</source_block_id>
-    <sink_block_id>blocks_unpack_k_bits_bb_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>trellis_metrics_x_0</source_block_id>
-    <sink_block_id>lazyviterbi_dynamic_viterbi_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>trellis_metrics_x_0</source_block_id>
-    <sink_block_id>lazyviterbi_lazy_viterbi_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>trellis_metrics_x_0</source_block_id>
-    <sink_block_id>lazyviterbi_viterbi_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>trellis_metrics_x_0</source_block_id>
-    <sink_block_id>trellis_viterbi_x_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>trellis_viterbi_x_0</source_block_id>
-    <sink_block_id>blocks_delay_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>virtual_source_0</source_block_id>
-    <sink_block_id>blks2_error_rate_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>virtual_source_0</source_block_id>
-    <sink_block_id>blks2_error_rate_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>virtual_source_0</source_block_id>
-    <sink_block_id>blks2_error_rate_0_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>virtual_source_0</source_block_id>
-    <sink_block_id>blks2_error_rate_0_0_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-</flow_graph>
+options:
+  parameters:
+    author: ''
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: top_block
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: ''
+    window_size: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: base_dir
+  id: variable
+  parameters:
+    comment: ''
+    value: '"PATH TO MODULE DIRECTORY"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [192, 12]
+    rotation: 0
+    state: disabled
+- name: base_dir
+  id: variable
+  parameters:
+    comment: ''
+    value: '"/home/amarquet/Documents/sdr/gr-lazyviterbi"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 184.0]
+    rotation: 0
+    state: enabled
+- name: fsm
+  id: variable
+  parameters:
+    comment: ''
+    value: trellis.fsm(base_dir+"/examples/fsm/5_7.fsm")
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [392, 12]
+    rotation: 0
+    state: enabled
+- name: noise_amp
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: ''
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.1'
+    stop: '10'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [192, 76]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '32000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 160]
+    rotation: 0
+    state: enabled
+- name: analog_noise_source_x_0
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: noise_amp
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_GAUSSIAN
+    seed: '0'
+    type: float
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [792, 188]
+    rotation: 0
+    state: enabled
+- name: analog_random_source_x_0
+  id: analog_random_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    max: '2'
+    maxoutbuf: '0'
+    min: '0'
+    minoutbuf: '0'
+    num_samps: '10000'
+    repeat: 'True'
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [32, 268]
+    rotation: 0
+    state: enabled
+- name: blocks_add_const_vxx_0
+  id: blocks_add_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '-1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [848, 292]
+    rotation: 0
+    state: enabled
+- name: blocks_add_xx_0
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [984, 264]
+    rotation: 0
+    state: enabled
+- name: blocks_char_to_float_0
+  id: blocks_char_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    scale: '1'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 292]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [776, 468]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [784, 564]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_0_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [784, 668]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_0_0_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [784, 772]
+    rotation: 0
+    state: enabled
+- name: blocks_multiply_const_vxx_0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '2'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [696, 292]
+    rotation: 0
+    state: enabled
+- name: blocks_throttle_0
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1080, 276]
+    rotation: 0
+    state: enabled
+- name: blocks_unpack_k_bits_bb_0
+  id: blocks_unpack_k_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: '2'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [424, 292]
+    rotation: 0
+    state: enabled
+- name: fec_ber_bf_0
+  id: fec_ber_bf
+  parameters:
+    affinity: ''
+    alias: ''
+    berlimit: '-7.0'
+    berminerrors: '100'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    test_mode: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 440.0]
+    rotation: 0
+    state: true
+- name: fec_ber_bf_0_0
+  id: fec_ber_bf
+  parameters:
+    affinity: ''
+    alias: ''
+    berlimit: '-7.0'
+    berminerrors: '100'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    test_mode: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 536.0]
+    rotation: 0
+    state: true
+- name: fec_ber_bf_0_0_0
+  id: fec_ber_bf
+  parameters:
+    affinity: ''
+    alias: ''
+    berlimit: '-7.0'
+    berminerrors: '100'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    test_mode: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [920, 640.0]
+    rotation: 0
+    state: true
+- name: fec_ber_bf_0_0_0_0
+  id: fec_ber_bf
+  parameters:
+    affinity: ''
+    alias: ''
+    berlimit: '-7.0'
+    berminerrors: '100'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    test_mode: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [920, 744.0]
+    rotation: 0
+    state: true
+- name: lazyviterbi_dynamic_viterbi_0
+  id: lazyviterbi_dynamic_viterbi
+  parameters:
+    affinity: ''
+    alias: ''
+    block_size: '1024'
+    comment: ''
+    final_state: '-1'
+    fsm_args: fsm
+    init_state: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    thres: '15.0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [288, 736]
+    rotation: 0
+    state: enabled
+- name: lazyviterbi_lazy_viterbi_0
+  id: lazyviterbi_lazy_viterbi
+  parameters:
+    affinity: ''
+    alias: ''
+    block_size: '1024'
+    comment: ''
+    final_state: '-1'
+    fsm_args: fsm
+    init_state: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    thres: '15.0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [288, 428]
+    rotation: 0
+    state: enabled
+- name: lazyviterbi_viterbi_0
+  id: lazyviterbi_viterbi
+  parameters:
+    affinity: ''
+    alias: ''
+    block_size: '1024'
+    comment: ''
+    final_state: '-1'
+    fsm_args: fsm
+    init_state: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    thres: '15.0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [288, 632]
+    rotation: 0
+    state: enabled
+- name: qtgui_number_sink_0
+  id: qtgui_number_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    autoscale: 'False'
+    avg: '0'
+    color1: ("black", "black")
+    color10: ("black", "black")
+    color2: ("black", "black")
+    color3: ("black", "black")
+    color4: ("black", "black")
+    color5: ("black", "black")
+    color6: ("black", "black")
+    color7: ("black", "black")
+    color8: ("black", "black")
+    color9: ("black", "black")
+    comment: ''
+    factor1: '1'
+    factor10: '1'
+    factor2: '1'
+    factor3: '1'
+    factor4: '1'
+    factor5: '1'
+    factor6: '1'
+    factor7: '1'
+    factor8: '1'
+    factor9: '1'
+    graph_type: qtgui.NUM_GRAPH_VERT
+    gui_hint: 1,1
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    max: '1'
+    min: '0'
+    name: '"Lazy"'
+    nconnections: '1'
+    type: float
+    unit1: ''
+    unit10: ''
+    unit2: ''
+    unit3: ''
+    unit4: ''
+    unit5: ''
+    unit6: ''
+    unit7: ''
+    unit8: ''
+    unit9: ''
+    update_time: '0.10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1088, 428]
+    rotation: 0
+    state: enabled
+- name: qtgui_number_sink_0_0
+  id: qtgui_number_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    autoscale: 'False'
+    avg: '0'
+    color1: ("black", "black")
+    color10: ("black", "black")
+    color2: ("black", "black")
+    color3: ("black", "black")
+    color4: ("black", "black")
+    color5: ("black", "black")
+    color6: ("black", "black")
+    color7: ("black", "black")
+    color8: ("black", "black")
+    color9: ("black", "black")
+    comment: ''
+    factor1: '1'
+    factor10: '1'
+    factor2: '1'
+    factor3: '1'
+    factor4: '1'
+    factor5: '1'
+    factor6: '1'
+    factor7: '1'
+    factor8: '1'
+    factor9: '1'
+    graph_type: qtgui.NUM_GRAPH_VERT
+    gui_hint: 1,2
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    max: '1'
+    min: '0'
+    name: '"Standard (gr-trellis)"'
+    nconnections: '1'
+    type: float
+    unit1: ''
+    unit10: ''
+    unit2: ''
+    unit3: ''
+    unit4: ''
+    unit5: ''
+    unit6: ''
+    unit7: ''
+    unit8: ''
+    unit9: ''
+    update_time: '0.10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1088, 524]
+    rotation: 0
+    state: enabled
+- name: qtgui_number_sink_0_0_0
+  id: qtgui_number_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    autoscale: 'False'
+    avg: '0'
+    color1: ("black", "black")
+    color10: ("black", "black")
+    color2: ("black", "black")
+    color3: ("black", "black")
+    color4: ("black", "black")
+    color5: ("black", "black")
+    color6: ("black", "black")
+    color7: ("black", "black")
+    color8: ("black", "black")
+    color9: ("black", "black")
+    comment: ''
+    factor1: '1'
+    factor10: '1'
+    factor2: '1'
+    factor3: '1'
+    factor4: '1'
+    factor5: '1'
+    factor6: '1'
+    factor7: '1'
+    factor8: '1'
+    factor9: '1'
+    graph_type: qtgui.NUM_GRAPH_VERT
+    gui_hint: 1,3
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    max: '1'
+    min: '0'
+    name: '"Standard (gr-lazyviterbi)"'
+    nconnections: '1'
+    type: float
+    unit1: ''
+    unit10: ''
+    unit2: ''
+    unit3: ''
+    unit4: ''
+    unit5: ''
+    unit6: ''
+    unit7: ''
+    unit8: ''
+    unit9: ''
+    update_time: '0.10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1088, 628.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_number_sink_0_0_0_0
+  id: qtgui_number_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    autoscale: 'False'
+    avg: '0'
+    color1: ("black", "black")
+    color10: ("black", "black")
+    color2: ("black", "black")
+    color3: ("black", "black")
+    color4: ("black", "black")
+    color5: ("black", "black")
+    color6: ("black", "black")
+    color7: ("black", "black")
+    color8: ("black", "black")
+    color9: ("black", "black")
+    comment: ''
+    factor1: '1'
+    factor10: '1'
+    factor2: '1'
+    factor3: '1'
+    factor4: '1'
+    factor5: '1'
+    factor6: '1'
+    factor7: '1'
+    factor8: '1'
+    factor9: '1'
+    graph_type: qtgui.NUM_GRAPH_VERT
+    gui_hint: 1,4
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    max: '1'
+    min: '0'
+    name: '"Dynamic"'
+    nconnections: '1'
+    type: float
+    unit1: ''
+    unit10: ''
+    unit2: ''
+    unit3: ''
+    unit4: ''
+    unit5: ''
+    unit6: ''
+    unit7: ''
+    unit8: ''
+    unit9: ''
+    update_time: '0.10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1088, 732.0]
+    rotation: 0
+    state: enabled
+- name: trellis_encoder_xx_0
+  id: trellis_encoder_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    blocklength: '0'
+    blockwise: 'False'
+    comment: ''
+    fsm_args: fsm
+    init_state: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: bb
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 284]
+    rotation: 0
+    state: enabled
+- name: trellis_metrics_x_0
+  id: trellis_metrics_x
+  parameters:
+    affinity: ''
+    alias: ''
+    card: fsm.O()
+    comment: ''
+    dim: fsm.I()
+    maxoutbuf: '0'
+    metric_type: digital.TRELLIS_EUCLIDEAN
+    minoutbuf: '0'
+    table: '[-1, -1, -1, 1, 1, -1, 1, 1]'
+    type: f
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 428]
+    rotation: 0
+    state: enabled
+- name: trellis_viterbi_x_0
+  id: trellis_viterbi_x
+  parameters:
+    affinity: ''
+    alias: ''
+    block_size: '1024'
+    comment: ''
+    final_state: '-1'
+    fsm_args: fsm
+    init_state: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: b
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [288, 532]
+    rotation: 0
+    state: enabled
+- name: virtual_sink_0
+  id: virtual_sink
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: msg
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [208, 204]
+    rotation: 0
+    state: enabled
+- name: virtual_source_0
+  id: virtual_source
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: msg
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [720, 412]
+    rotation: 0
+    state: enabled
+
+connections:
+- [analog_noise_source_x_0, '0', blocks_add_xx_0, '0']
+- [analog_random_source_x_0, '0', trellis_encoder_xx_0, '0']
+- [analog_random_source_x_0, '0', virtual_sink_0, '0']
+- [blocks_add_const_vxx_0, '0', blocks_add_xx_0, '1']
+- [blocks_add_xx_0, '0', blocks_throttle_0, '0']
+- [blocks_char_to_float_0, '0', blocks_multiply_const_vxx_0, '0']
+- [blocks_delay_0, '0', fec_ber_bf_0, '1']
+- [blocks_delay_0_0, '0', fec_ber_bf_0_0, '1']
+- [blocks_delay_0_0_0, '0', fec_ber_bf_0_0_0, '1']
+- [blocks_delay_0_0_0_0, '0', fec_ber_bf_0_0_0_0, '1']
+- [blocks_multiply_const_vxx_0, '0', blocks_add_const_vxx_0, '0']
+- [blocks_throttle_0, '0', trellis_metrics_x_0, '0']
+- [blocks_unpack_k_bits_bb_0, '0', blocks_char_to_float_0, '0']
+- [fec_ber_bf_0, '0', qtgui_number_sink_0, '0']
+- [fec_ber_bf_0_0, '0', qtgui_number_sink_0_0, '0']
+- [fec_ber_bf_0_0_0, '0', qtgui_number_sink_0_0_0, '0']
+- [fec_ber_bf_0_0_0_0, '0', qtgui_number_sink_0_0_0_0, '0']
+- [lazyviterbi_dynamic_viterbi_0, '0', blocks_delay_0_0_0_0, '0']
+- [lazyviterbi_lazy_viterbi_0, '0', blocks_delay_0, '0']
+- [lazyviterbi_viterbi_0, '0', blocks_delay_0_0_0, '0']
+- [trellis_encoder_xx_0, '0', blocks_unpack_k_bits_bb_0, '0']
+- [trellis_metrics_x_0, '0', lazyviterbi_dynamic_viterbi_0, '0']
+- [trellis_metrics_x_0, '0', lazyviterbi_lazy_viterbi_0, '0']
+- [trellis_metrics_x_0, '0', lazyviterbi_viterbi_0, '0']
+- [trellis_metrics_x_0, '0', trellis_viterbi_x_0, '0']
+- [trellis_viterbi_x_0, '0', blocks_delay_0_0, '0']
+- [virtual_source_0, '0', fec_ber_bf_0, '0']
+- [virtual_source_0, '0', fec_ber_bf_0_0, '0']
+- [virtual_source_0, '0', fec_ber_bf_0_0_0, '0']
+- [virtual_source_0, '0', fec_ber_bf_0_0_0_0, '0']
+
+metadata:
+  file_format: 1

@@ -2,4 +2,9 @@
 
 Welcome to the GNU Radio LAZYVITERBI Block
 
+This is the intro page for the Doxygen manual generated for the LAZYVITERBI
+block (docs/doxygen/other/main_page.dox). Edit it to add more detailed
+documentation about the new GNU Radio modules contained in this
+project.
+
 */

@@ -22,11 +22,12 @@
 This is the GNU Radio LAZYVITERBI module. Place your Python package
 description here (python/__init__.py).
 '''
+from __future__ import unicode_literals
 
 # import swig generated symbols into the lazyviterbi namespace
 try:
 	# this might fail if the module is python-only
-	from lazyviterbi_swig import *
+	from .lazyviterbi_swig import *
 except ImportError:
 	pass
 
