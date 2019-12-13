@@ -42,7 +42,7 @@ namespace gr {
       : gr::block("viterbi",
               gr::io_signature::make(1, -1, sizeof(float)),
               gr::io_signature::make(1, -1, sizeof(char))),
-        d_FSM(FSM), d_K(K)
+        d_FSM(FSM), d_K(K), d_ordered_OS(FSM.S()*FSM.I())
     {
       //S0 and SK must represent a state of the trellis
       if(S0 >= 0 || S0 < d_FSM.S()) {
@@ -57,6 +57,18 @@ namespace gr {
       }
       else {
         d_SK = -1;
+      }
+
+      int I = d_FSM.I();
+      int S = d_FSM.S();
+      std::vector< std::vector<int> > PS = d_FSM.PS();
+      std::vector< std::vector<int> > PI = d_FSM.PI();
+      std::vector<int> OS = d_FSM.OS();
+      std::vector<int>::iterator ordered_OS_it = d_ordered_OS.begin();
+      for(int s=0 ; s < S ; ++s) {
+        for(size_t i=0 ; i<(PS[s]).size() ; ++i) {
+          *(ordered_OS_it++) = OS[PS[s][i]*I + PI[s][i]];
+        }
       }
 
       set_relative_rate(1.0 / ((double)d_FSM.O()));
@@ -119,7 +131,7 @@ namespace gr {
 
         for(int n = 0; n < nblocks; n++) {
           viterbi_algorithm(d_FSM.I(), d_FSM.S(), d_FSM.O(), d_FSM.NS(),
-              d_FSM.OS(), d_FSM.PS(), d_FSM.PI(), d_K, d_S0, d_SK,
+              d_ordered_OS, d_FSM.PS(), d_FSM.PI(), d_K, d_S0, d_SK,
               &(in[n*d_K*d_FSM.O()]), &(out[n*d_K]));
         }
       }
@@ -130,7 +142,7 @@ namespace gr {
 
     void
     viterbi_impl::viterbi_algorithm(int I, int S, int O, const std::vector<int> &NS,
-        const std::vector<int> &OS, const std::vector< std::vector<int> > &PS,
+        const std::vector<int> &ordered_OS, const std::vector< std::vector<int> > &PS,
         const std::vector< std::vector<int> > &PI, int K, int S0, int SK,
         const float *in, unsigned char *out)
     {
@@ -138,56 +150,72 @@ namespace gr {
       float can_metric = std::numeric_limits<float>::max();
       float min_metric = std::numeric_limits<float>::max();
 
-      std::vector<int> trace(K*S);
+      std::vector<int> trace(K*S, 0);
       std::vector<float> alpha_prev(S, std::numeric_limits<float>::max());
       std::vector<float> alpha_curr(S, std::numeric_limits<float>::max());
 
       std::vector<float>::iterator alpha_curr_it;
-      std::vector<int>::const_iterator PS_it, PI_it;
+      std::vector<int>::const_iterator PS_it;
       std::vector<int>::iterator trace_it = trace.begin();
+      std::vector<int>::const_iterator ordered_OS_it = ordered_OS.begin();
 
       //If initial state was specified
       if(S0 != -1) {
         alpha_prev[S0] = 0.0;
       }
+      else {
+        for (std::vector<float>::iterator alpha_prev_it = alpha_prev.begin() ;
+              alpha_prev_it != alpha_prev.end() ; ++alpha_prev_it) {
+          *alpha_prev_it = 0.0;
+        }
+      }
 
       for(float* in_k=(float*)in ; in_k < (float*)in + K*O ; in_k += O) {
         //Current path metric iterator
         alpha_curr_it = alpha_curr.begin();
-        for(int s=0 ; s < S ; ++s) {
+        ordered_OS_it = ordered_OS.begin();
+
+        //Reset minimum metric (used for normalization)
+        min_metric = std::numeric_limits<float>::max();
+
+        //For each state
+        for(std::vector< std::vector<int> >::const_iterator PS_s = PS.begin() ;
+              PS_s != PS.end() ; ++PS_s) {
           //Iterators for previous state and previous input lists
-          PS_it=PS[s].begin();
-          PI_it=PI[s].begin();
+          PS_it=(*PS_s).begin();
 
           //ACS for state s
           //Pre-loop
-          *alpha_curr_it = alpha_prev[*PS_it] + in_k[OS[(*PS_it)*I + (*PI_it)]];
-          *trace_it = 0;
+          //*alpha_curr_it = alpha_prev[PS[s][i]] + in_k[OS[PS[s][i]*I + PI[s][i]]];
+          *alpha_curr_it = alpha_prev[*(PS_it++)] + in_k[*(ordered_OS_it++)];
+          if(*alpha_curr_it < min_metric) {
+            min_metric = *alpha_curr_it;
+          }
 
           //Loop
-          for(size_t i=1 ; i<(PS[s]).size() ; ++i) {
-            //Update PS/PI iterators
-            ++PS_it;
-            ++PI_it;
-
+          for(size_t i=1 ; i< (*PS_s).size() ; ++i) {
             //ADD
-            can_metric = alpha_prev[*PS_it] + in_k[OS[(*PS_it)*I + (*PI_it)]];
+            //can_metric = alpha_prev[PS[s][i]] + in_k[OS[PS[s][i]*I + PI[s][i]]];
+            can_metric = alpha_prev[*(PS_it++)] + in_k[*(ordered_OS_it++)];
 
             //COMPARE
             if(can_metric < *alpha_curr_it) {
               //SELECT
               *alpha_curr_it = can_metric;
-              *trace_it = i;  //Store previous input index for traceback
+              if(*alpha_curr_it < min_metric) {
+                min_metric = *alpha_curr_it;
+              }
+              //Store previous input index for traceback
+              *trace_it = i;
             }
           }
 
-          //Update trace and path metric iterator
+          //Update iterators
           ++trace_it;
           ++alpha_curr_it;
         }
 
         //Metrics normalization
-        min_metric = *min_element(alpha_curr.begin(), alpha_curr.end());
         std::transform(alpha_curr.begin(), alpha_curr.end(), alpha_curr.begin(),
             std::bind2nd(std::minus<double>(), min_metric));
 
@@ -209,12 +237,12 @@ namespace gr {
 
       for(unsigned char* out_k = out+K-1 ; out_k >= out ; --out_k) {
         //Retrieve previous input index from trace
-	pidx=*(trace_it + tb_state);
+        pidx=*(trace_it + tb_state);
         //Update trace_it for next output symbol
         trace_it -= S;
 
         //Output previous input
-	*out_k = (unsigned char) PI[tb_state][pidx];
+        *out_k = (unsigned char) PI[tb_state][pidx];
 
         //Update tb_state with the previous state on the shortest path
         tb_state = PS[tb_state][pidx];

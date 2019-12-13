@@ -33,6 +33,7 @@ namespace gr {
       int d_K;
       int d_S0;
       int d_SK;
+      std::vector<int> d_ordered_OS;
 
      public:
       viterbi_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
@@ -53,7 +54,7 @@ namespace gr {
           gr_vector_const_void_star &input_items, gr_vector_void_star &output_items);
 
       void viterbi_algorithm(int I, int S, int O, const std::vector<int> &NS,
-          const std::vector<int> &OS, const std::vector< std::vector<int> > &PS,
+          const std::vector<int> &ordered_OS, const std::vector< std::vector<int> > &PS,
           const std::vector< std::vector<int> > &PI, int K, int S0, int SK,
           const float *in, unsigned char *out);
     };
