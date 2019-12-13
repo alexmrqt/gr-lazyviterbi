@@ -1,5 +1,7 @@
 # GNURadio implementation of the Lazy Viterbi algorithm.
 
+*Now compatible with GNURadio 3.8!*
+
 This module contains a three blocks, which are drop-in replacement for the Viterbi
 block of gr-trellis:
 * Lazy Viterbi: implements the Viterbi algorithm for decoding or equalization in the way described
@@ -12,7 +14,6 @@ at low SNR.
 This implementation is better-suited than Lazy Viterbi for low SNRs.
 * Dynamic Viterbi: Switch between the two implementations mentionned above,
 depending on SNR.
-
 
 One GRC example is provided in the examples/ directory:
 * `simple.grc` simple example showing how each decoder should be use in a typical flowgraph. You will have to populate the variable `base_dir`, and put the full path to the source folder of `gr-lazyviterbi` (for example: `/usr/local/src/gr-lazyviterbi`).
