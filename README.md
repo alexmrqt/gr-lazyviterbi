@@ -9,13 +9,14 @@ A Fast Maximum-Likelihood Decoder for Convolutional Codes. Vehicular Technology 
 This implementation provides a significant speedup at moderate SNRs, but is slower
 at low SNR.
 * Viterbi: implements the classical Viterbi algorithm.
-This implementation, which is faster than the one present in gr-trellis, is
-better-suited than Lazy Viterbi for low SNRs.
+This implementation is better-suited than Lazy Viterbi for low SNRs.
 * Dynamic Viterbi: Switch between the two implementations mentionned above,
 depending on SNR.
 
 
-One GRC example is provided in the examples/ directory.
+One GRC example is provided in the examples/ directory:
+* `simple.grc` simple example showing how each decoder should be use in a typical flowgraph. You will have to populate the variable `base_dir`, and put the full path to the source folder of `gr-lazyviterbi` (for example: `/usr/local/src/gr-lazyviterbi`).
+
 There are also two python scripts :
 * `ber_vs_ebn0_75_awgn.py` lets you compare the BER of this algorithm
 and the gr-trellis's implementation of the classical Viterbi algorithm for a

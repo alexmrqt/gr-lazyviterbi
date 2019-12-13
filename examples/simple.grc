@@ -41,19 +41,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 12]
-    rotation: 0
-    state: disabled
-- name: base_dir
-  id: variable
-  parameters:
-    comment: ''
-    value: '"/home/amarquet/Documents/sdr/gr-lazyviterbi"'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [360, 184.0]
+    coordinate: [488, 92.0]
     rotation: 0
     state: enabled
 - name: fsm
@@ -65,7 +53,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [392, 12]
+    coordinate: [192, 12.0]
     rotation: 0
     state: enabled
 - name: noise_amp
@@ -86,7 +74,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 76]
+    coordinate: [192, 76.0]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -426,7 +414,6 @@ blocks:
     init_state: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
-    thres: '15.0'
   states:
     bus_sink: false
     bus_source: false
@@ -446,7 +433,6 @@ blocks:
     init_state: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
-    thres: '15.0'
   states:
     bus_sink: false
     bus_source: false
@@ -454,6 +440,19 @@ blocks:
     coordinate: [288, 632]
     rotation: 0
     state: enabled
+- name: note_0
+  id: note
+  parameters:
+    alias: ''
+    comment: ''
+    note: Change this!
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [520, 52.0]
+    rotation: 0
+    state: true
 - name: qtgui_number_sink_0
   id: qtgui_number_sink
   parameters:
