@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2018 Free Software Foundation, Inc.
+ * Copyright 2019 Alexandre Marquet.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,16 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_LAZYVITERBI_VITERBI_IMPL_H
-#define INCLUDED_LAZYVITERBI_VITERBI_IMPL_H
+#ifndef INCLUDED_LAZYVITERBI_VITERBI_VOLK_BRANCH_IMPL_H
+#define INCLUDED_LAZYVITERBI_VITERBI_VOLK_BRANCH_IMPL_H
 
-#include <lazyviterbi/viterbi.h>
+#include <lazyviterbi/viterbi_volk_branch.h>
+#include <volk/volk.h>
 
 namespace gr {
   namespace lazyviterbi {
 
-    class viterbi_impl : public viterbi
+    class viterbi_volk_branch_impl : public viterbi_volk_branch
     {
      private:
       gr::trellis::fsm d_FSM; //Trellis description
@@ -37,9 +38,10 @@ namespace gr {
       //Same as d_FSM.OS(), but re-ordered in the following way:
       //d_ordered_OS[s*I+i] = d_FSM.OS()[d_FSM.PS()[s][i]*I + d_FSM.PI()[s][i]]
       std::vector<int> d_ordered_OS;
+      size_t d_max_size_PS_s;
 
      public:
-      viterbi_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
+      viterbi_volk_branch_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
 
       gr::trellis::fsm FSM() const  { return d_FSM; }
       int K()  const { return d_K; }
@@ -56,7 +58,7 @@ namespace gr {
       int general_work(int noutput_items, gr_vector_int &ninput_items,
           gr_vector_const_void_star &input_items, gr_vector_void_star &output_items);
 
-      void viterbi_algorithm(int I, int S, int O, const std::vector<int> &NS,
+      void viterbi_algorithm_volk_branch(int I, int S, int O, const std::vector<int> &NS,
           const std::vector<int> &ordered_OS, const std::vector< std::vector<int> > &PS,
           const std::vector< std::vector<int> > &PI, int K, int S0, int SK,
           const float *in, unsigned char *out);
@@ -65,5 +67,5 @@ namespace gr {
   } // namespace lazyviterbi
 } // namespace gr
 
-#endif /* INCLUDED_LAZYVITERBI_VITERBI_IMPL_H */
+#endif /* INCLUDED_LAZYVITERBI_VITERBI_VOLK_BRANCH_IMPL_H */
 

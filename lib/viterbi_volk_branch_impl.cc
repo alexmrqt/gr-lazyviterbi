@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2018 Free Software Foundation, Inc.
+ * Copyright 2019 Alexandre Marquet.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,23 +23,23 @@
 #endif
 
 #include <gnuradio/io_signature.h>
-#include "viterbi_impl.h"
+#include "viterbi_volk_branch_impl.h"
 
 namespace gr {
   namespace lazyviterbi {
 
-    viterbi::sptr
-    viterbi::make(const gr::trellis::fsm &FSM, int K, int S0, int SK)
+    viterbi_volk_branch::sptr
+    viterbi_volk_branch::make(const gr::trellis::fsm &FSM, int K, int S0, int SK)
     {
       return gnuradio::get_initial_sptr
-        (new viterbi_impl(FSM, K, S0, SK));
+        (new viterbi_volk_branch_impl(FSM, K, S0, SK));
     }
 
     /*
      * The private constructor
      */
-    viterbi_impl::viterbi_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK)
-      : gr::block("viterbi",
+    viterbi_volk_branch_impl::viterbi_volk_branch_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK)
+      : gr::block("viterbi_volk_branch",
               gr::io_signature::make(1, -1, sizeof(float)),
               gr::io_signature::make(1, -1, sizeof(char))),
         d_FSM(FSM), d_K(K), d_ordered_OS(FSM.S()*FSM.I())
@@ -65,12 +65,17 @@ namespace gr {
       std::vector< std::vector<int> > PI = d_FSM.PI();
       std::vector<int> OS = d_FSM.OS();
 
-      //Compute ordered_OS
+      //Compute ordered_OS and max_size_PS_s
       std::vector<int>::iterator ordered_OS_it = d_ordered_OS.begin();
+      d_max_size_PS_s = 0;
 
       for(int s=0 ; s < S ; ++s) {
         for(size_t i=0 ; i<(PS[s]).size() ; ++i) {
           *(ordered_OS_it++) = OS[PS[s][i]*I + PI[s][i]];
+        }
+
+        if ((PS[s]).size() > d_max_size_PS_s) {
+          d_max_size_PS_s = (PS[s]).size();
         }
       }
 
@@ -79,7 +84,7 @@ namespace gr {
     }
 
     void
-    viterbi_impl::set_FSM(const gr::trellis::fsm &FSM)
+    viterbi_volk_branch_impl::set_FSM(const gr::trellis::fsm &FSM)
     {
       gr::thread::scoped_lock guard(d_setlock);
       d_FSM = FSM;
@@ -87,7 +92,7 @@ namespace gr {
     }
 
     void
-    viterbi_impl::set_K(int K)
+    viterbi_volk_branch_impl::set_K(int K)
     {
       gr::thread::scoped_lock guard(d_setlock);
       d_K = K;
@@ -95,21 +100,21 @@ namespace gr {
     }
 
     void
-    viterbi_impl::set_S0(int S0)
+    viterbi_volk_branch_impl::set_S0(int S0)
     {
       gr::thread::scoped_lock guard(d_setlock);
       d_S0 = S0;
     }
 
     void
-    viterbi_impl::set_SK(int SK)
+    viterbi_volk_branch_impl::set_SK(int SK)
     {
       gr::thread::scoped_lock guard(d_setlock);
       d_SK = SK;
     }
 
     void
-    viterbi_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required)
+    viterbi_volk_branch_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required)
     {
       int input_required =  d_FSM.O() * noutput_items;
       unsigned ninputs = ninput_items_required.size();
@@ -119,7 +124,7 @@ namespace gr {
     }
 
     int
-    viterbi_impl::general_work (int noutput_items,
+    viterbi_volk_branch_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
@@ -133,8 +138,8 @@ namespace gr {
         unsigned char *out = (unsigned char*)output_items[m];
 
         for(int n = 0; n < nblocks; n++) {
-          viterbi_algorithm(d_FSM.I(), d_FSM.S(), d_FSM.O(), d_FSM.NS(),
-              d_ordered_OS, d_FSM.PS(), d_FSM.PI(), d_K, d_S0, d_SK,
+          viterbi_algorithm_volk_branch(d_FSM.I(), d_FSM.S(), d_FSM.O(),
+              d_FSM.NS(), d_ordered_OS, d_FSM.PS(), d_FSM.PI(), d_K, d_S0, d_SK,
               &(in[n*d_K*d_FSM.O()]), &(out[n*d_K]));
         }
       }
@@ -143,19 +148,29 @@ namespace gr {
       return noutput_items;
     }
 
+    //Volk optimized implementation adapted when the number of branch between
+    //pairs of states is greater than the number of states.
     void
-    viterbi_impl::viterbi_algorithm(int I, int S, int O, const std::vector<int> &NS,
-        const std::vector<int> &ordered_OS, const std::vector< std::vector<int> > &PS,
+    viterbi_volk_branch_impl::viterbi_algorithm_volk_branch(int I, int S, int O,
+        const std::vector<int> &NS, const std::vector<int> &ordered_OS,
+        const std::vector< std::vector<int> > &PS,
         const std::vector< std::vector<int> > &PI, int K, int S0, int SK,
         const float *in, unsigned char *out)
     {
       int tb_state, pidx;
-      float can_metric = std::numeric_limits<float>::max();
       float min_metric = std::numeric_limits<float>::max();
 
       std::vector<int> trace(K*S, 0);
       std::vector<float> alpha_prev(S, std::numeric_limits<float>::max());
       std::vector<float> alpha_curr(S, std::numeric_limits<float>::max());
+
+      //Variables to be allocated by volk (for best alignment)
+      float *can_vector = (float*)volk_malloc(d_max_size_PS_s*sizeof(float),
+              volk_get_alignment());
+      float *alpha_tmp = (float*)volk_malloc(d_max_size_PS_s*sizeof(float),
+              volk_get_alignment());
+      uint32_t *max_idx = (uint32_t*)volk_malloc(sizeof(uint32_t),
+          volk_get_alignment());
 
       std::vector<float>::iterator alpha_curr_it;
       std::vector<int>::const_iterator PS_it;
@@ -184,38 +199,33 @@ namespace gr {
         //For each state
         for(std::vector< std::vector<int> >::const_iterator PS_s = PS.begin() ;
               PS_s != PS.end() ; ++PS_s) {
+
           //Iterators for previous state and previous input lists
           PS_it=(*PS_s).begin();
 
           //ACS for state s
-          //Pre-loop
-          //*alpha_curr_it = alpha_prev[PS[s][i]] + in_k[OS[PS[s][i]*I + PI[s][i]]];
-          *alpha_curr_it = alpha_prev[*(PS_it++)] + in_k[*(ordered_OS_it++)];
-          if(*alpha_curr_it < min_metric) {
-            min_metric = *alpha_curr_it;
+          for(float* can_vector_i = can_vector ;
+              can_vector_i < can_vector + (*PS_s).size() ; ++can_vector_i) {
+            //can_vector_i = -in_k[OS[PS[s][i]*I + PI[s][i]]]
+            *can_vector_i = -in_k[*(ordered_OS_it++)];
           }
-
-          //Loop
-          for(size_t i=1 ; i< (*PS_s).size() ; ++i) {
-            //ADD
-            //can_metric = alpha_prev[PS[s][i]] + in_k[OS[PS[s][i]*I + PI[s][i]]];
-            can_metric = alpha_prev[*(PS_it++)] + in_k[*(ordered_OS_it++)];
-
-            //COMPARE
-            if(can_metric < *alpha_curr_it) {
-              //SELECT
-              *alpha_curr_it = can_metric;
-              if(*alpha_curr_it < min_metric) {
-                min_metric = *alpha_curr_it;
-              }
-              //Store previous input index for traceback
-              *trace_it = i;
-            }
+          for(float* alpha_tmp_i = alpha_tmp ;
+              alpha_tmp_i < alpha_tmp + (*PS_s).size() ; ++alpha_tmp_i) {
+            //alpha_tmp[i] = -alpha_prev[PS[s][i]]
+            *alpha_tmp_i = alpha_prev[*(PS_it++)];
           }
+          //ADD
+          volk_32f_x2_subtract_32f(can_vector, can_vector, alpha_tmp, (*PS_s).size());
+          //COMPARE
+          volk_32f_index_max_32u(max_idx, can_vector, (*PS_s).size());
+          //SELECT
+          *(alpha_curr_it++) = -can_vector[*max_idx];
+          *(trace_it++) = *max_idx;
 
-          //Update iterators
-          ++trace_it;
-          ++alpha_curr_it;
+          //Update min_metric if necessary
+          if(-can_vector[*max_idx] < min_metric) {
+            min_metric = -can_vector[*max_idx];
+          }
         }
 
         //Metrics normalization
@@ -225,6 +235,11 @@ namespace gr {
         //At this point, current path metrics becomes previous path metrics
         alpha_prev.swap(alpha_curr);
       }
+
+      //Dealocate max_idx and can_vector
+      volk_free(max_idx);
+      volk_free(can_vector);
+      volk_free(alpha_tmp);
 
       //If final state was specified
       if(SK != -1) {

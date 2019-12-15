@@ -54,18 +54,22 @@ class ber_vs_ebn0_awgn(gr.top_block):
         self.trellis_viterbi = trellis.viterbi_b(trellis.fsm(fsm), pkt_len, 0, -1)
         self.viterbi = lv.viterbi(trellis.fsm(fsm), pkt_len, 0, -1)
         self.lazy = lv.lazy_viterbi(trellis.fsm(fsm), pkt_len, 0, -1)
+        self.viterbi_vb = lv.viterbi_volk_branch(trellis.fsm(fsm), pkt_len, 0, -1)
 
         self.pack_trellis_viterbi = blocks.pack_k_bits_bb(8)
         self.pack_viterbi = blocks.pack_k_bits_bb(8)
         self.pack_lazy = blocks.pack_k_bits_bb(8)
+        self.pack_viterbi_vb = blocks.pack_k_bits_bb(8)
 
         self.ber_computer_trellis_viterbi = fec.ber_bf(False)
         self.ber_computer_viterbi = fec.ber_bf(False)
         self.ber_computer_lazy = fec.ber_bf(False)
+        self.ber_computer_viterbi_vb = fec.ber_bf(False)
 
         self.vector_sink_trellis_viterbi = blocks.vector_sink_f()
         self.vector_sink_viterbi = blocks.vector_sink_f()
         self.vector_sink_lazy = blocks.vector_sink_f()
+        self.vector_sink_viterbi_vb = blocks.vector_sink_f()
 
         ##################################################
         # Connections
@@ -82,23 +86,28 @@ class ber_vs_ebn0_awgn(gr.top_block):
         self.connect((self.metrics_computer, 0), (self.trellis_viterbi, 0))
         self.connect((self.metrics_computer, 0), (self.viterbi, 0))
         self.connect((self.metrics_computer, 0), (self.lazy, 0))
+        self.connect((self.metrics_computer, 0), (self.viterbi_vb, 0))
 
         self.connect((self.bits_src, 0), (self.pack_src, 0))
         self.connect((self.trellis_viterbi, 0), (self.pack_trellis_viterbi, 0))
         self.connect((self.viterbi, 0), (self.pack_viterbi, 0))
         self.connect((self.lazy, 0), (self.pack_lazy, 0))
+        self.connect((self.viterbi_vb, 0), (self.pack_viterbi_vb, 0))
 
         self.connect((self.pack_src, 0), (self.ber_computer_trellis_viterbi, 0))
         self.connect((self.pack_src, 0), (self.ber_computer_viterbi, 0))
         self.connect((self.pack_src, 0), (self.ber_computer_lazy, 0))
+        self.connect((self.pack_src, 0), (self.ber_computer_viterbi_vb, 0))
 
         self.connect((self.pack_trellis_viterbi, 0), (self.ber_computer_trellis_viterbi, 1))
         self.connect((self.pack_viterbi, 0), (self.ber_computer_viterbi, 1))
         self.connect((self.pack_lazy, 0), (self.ber_computer_lazy, 1))
+        self.connect((self.pack_viterbi_vb, 0), (self.ber_computer_viterbi_vb, 1))
 
         self.connect((self.ber_computer_trellis_viterbi, 0), (self.vector_sink_trellis_viterbi, 0))
         self.connect((self.ber_computer_viterbi, 0), (self.vector_sink_viterbi, 0))
         self.connect((self.ber_computer_lazy, 0), (self.vector_sink_lazy, 0))
+        self.connect((self.ber_computer_viterbi_vb, 0), (self.vector_sink_viterbi_vb, 0))
 
 def main():
     pkt_len = 16384
@@ -108,6 +117,7 @@ def main():
     BER_trellis_viterbi = numpy.zeros(len(EbN0dB))
     BER_viterbi = numpy.zeros(len(EbN0dB))
     BER_lazy = numpy.zeros(len(EbN0dB))
+    BER_viterbi_vb = numpy.zeros(len(EbN0dB))
 
     for i in range(0, len(EbN0dB)):
         print("Eb/N0=" + str(EbN0dB[i]))
@@ -127,6 +137,10 @@ def main():
         BER_lazy[i] = 10**(numpy.mean(tb.vector_sink_lazy.data()))
         tb.vector_sink_lazy.reset()
 
+        print("BER Viterbi volk branch:" + str(tb.vector_sink_viterbi_vb.data()))
+        BER_viterbi_vb[i] = 10**(numpy.mean(tb.vector_sink_viterbi_vb.data()))
+        tb.vector_sink_viterbi.reset()
+
         print("")
 
     #Plot results
@@ -134,6 +148,7 @@ def main():
             label="Viterbi (gr-trellis)")
     plt.semilogy(EbN0dB, BER_viterbi, '-+', label="Viterbi (gr-lazyviterbi)")
     plt.semilogy(EbN0dB, BER_lazy, '-x', label="Lazy")
+    plt.semilogy(EbN0dB, BER_viterbi_vb, '-o', label="Viterbi volk branch")
 
     plt.grid(which='both')
     plt.ylabel('BER')
