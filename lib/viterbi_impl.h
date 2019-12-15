@@ -22,6 +22,7 @@
 #define INCLUDED_LAZYVITERBI_VITERBI_IMPL_H
 
 #include <lazyviterbi/viterbi.h>
+#include <volk/volk.h>
 
 namespace gr {
   namespace lazyviterbi {
@@ -29,11 +30,15 @@ namespace gr {
     class viterbi_impl : public viterbi
     {
      private:
-      gr::trellis::fsm d_FSM;
-      int d_K;
-      int d_S0;
-      int d_SK;
+      gr::trellis::fsm d_FSM; //Trellis description
+      int d_K;                //Number of trellis sections
+      int d_S0;               //Initial state idx (-1 if unknown)
+      int d_SK;               //Final state idx (-1 if unknown)
+
+      //Same as d_FSM.OS(), but re-ordered in the following way:
+      //d_ordered_OS[s*I+i] = d_FSM.OS()[d_FSM.PS()[s][i]*I + d_FSM.PI()[s][i]]
       std::vector<int> d_ordered_OS;
+      size_t d_max_size_PS_s;
 
      public:
       viterbi_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
@@ -54,6 +59,16 @@ namespace gr {
           gr_vector_const_void_star &input_items, gr_vector_void_star &output_items);
 
       void viterbi_algorithm(int I, int S, int O, const std::vector<int> &NS,
+          const std::vector<int> &ordered_OS, const std::vector< std::vector<int> > &PS,
+          const std::vector< std::vector<int> > &PI, int K, int S0, int SK,
+          const float *in, unsigned char *out);
+
+      void viterbi_algorithm_volk_branch(int I, int S, int O, const std::vector<int> &NS,
+          const std::vector<int> &ordered_OS, const std::vector< std::vector<int> > &PS,
+          const std::vector< std::vector<int> > &PI, int K, int S0, int SK,
+          const float *in, unsigned char *out);
+
+      void viterbi_algorithm_volk_state(int I, int S, int O, const std::vector<int> &NS,
           const std::vector<int> &ordered_OS, const std::vector< std::vector<int> > &PS,
           const std::vector< std::vector<int> > &PI, int K, int S0, int SK,
           const float *in, unsigned char *out);
