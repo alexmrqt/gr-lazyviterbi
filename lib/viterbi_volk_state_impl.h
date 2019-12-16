@@ -35,9 +35,6 @@ namespace gr {
       int d_S0;               //Initial state idx (-1 if unknown)
       int d_SK;               //Final state idx (-1 if unknown)
 
-      //Same as d_FSM.OS(), but re-ordered in the following way:
-      //d_ordered_OS[s*I+i] = d_FSM.OS()[d_FSM.PS()[s][i]*I + d_FSM.PI()[s][i]]
-      std::vector<int> d_ordered_OS;
       size_t d_max_size_PS_s;
 
      public:
@@ -59,7 +56,7 @@ namespace gr {
           gr_vector_const_void_star &input_items, gr_vector_void_star &output_items);
 
       void viterbi_algorithm_volk_state(int I, int S, int O, const std::vector<int> &NS,
-          const std::vector<int> &ordered_OS, const std::vector< std::vector<int> > &PS,
+          const std::vector<int> &OS, const std::vector< std::vector<int> > &PS,
           const std::vector< std::vector<int> > &PI, int K, int S0, int SK,
           const float *in, unsigned char *out);
     };
