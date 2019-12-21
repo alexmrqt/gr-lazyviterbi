@@ -37,6 +37,10 @@ namespace gr {
 
       size_t d_max_size_PS_s;
 
+	 protected:
+	  void order_alpha_prev_in(int i, const float *alpha_prev, const float *in_k,
+			  float *alpha_prev_ord, float *in_k_ord);
+
      public:
       viterbi_volk_state_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
 
