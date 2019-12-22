@@ -35,11 +35,20 @@ namespace gr {
       int d_S0;               //Initial state idx (-1 if unknown)
       int d_SK;               //Final state idx (-1 if unknown)
 
+      //Same as d_FSM.OS(), but re-ordered in the following way:
+      //d_ordered_OS[i*S+s] = d_FSM.OS()[d_FSM.PS()[s][i]*I + d_FSM.PI()[s][i]]
+      std::vector<int> d_ordered_OS;
+      //Same as d_FSM.PS(), but flattened:
+      //d_ordered_PS[i*S+s] = d_FSM.PS()[s][i]
+      std::vector<int> d_ordered_PS;
+      //Max size of PS[s]
       size_t d_max_size_PS_s;
 
-	 protected:
-	  void order_alpha_prev_in(int i, const float *alpha_prev, const float *in_k,
-			  float *alpha_prev_ord, float *in_k_ord);
+      protected:
+        //void order_alpha_prev_in(int i, const float *alpha_prev, const float *in_k,
+	//		  float *alpha_prev_ord, float *in_k_ord);
+        void compute_all_metrics(const float *alpha_prev, const float *in_k,
+            float *can_metrics);
 
      public:
       viterbi_volk_state_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);

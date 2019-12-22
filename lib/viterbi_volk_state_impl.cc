@@ -42,7 +42,7 @@ namespace gr {
       : gr::block("viterbi_volk_state",
               gr::io_signature::make(1, -1, sizeof(float)),
               gr::io_signature::make(1, -1, sizeof(char))),
-        d_FSM(FSM), d_K(K)
+        d_FSM(FSM), d_K(K), d_ordered_OS(FSM.S()*FSM.I()), d_ordered_PS(FSM.S()*FSM.I())
     {
       //S0 and SK must represent a state of the trellis
       if(S0 >= 0 || S0 < d_FSM.S()) {
@@ -59,13 +59,28 @@ namespace gr {
         d_SK = -1;
       }
 
+      int I = d_FSM.I();
       int S = d_FSM.S();
       std::vector< std::vector<int> > PS = d_FSM.PS();
+      std::vector< std::vector<int> > PI = d_FSM.PI();
+      std::vector<int> OS = d_FSM.OS();
+
       d_max_size_PS_s = 0;
+      std::vector<int>::iterator ordered_OS_it = d_ordered_OS.begin();
+      std::vector<int>::iterator ordered_PS_it = d_ordered_PS.begin();
 
       for(int s=0 ; s < S ; ++s) {
         if ((PS[s]).size() > d_max_size_PS_s) {
           d_max_size_PS_s = (PS[s]).size();
+        }
+      }
+
+      for(size_t i=0 ; i<d_max_size_PS_s ; ++i) {
+        for(int s=0 ; s < S ; ++s) {
+          if (i < PS[s].size()) {
+            *(ordered_OS_it++) = OS[PS[s][i]*I + PI[s][i]];
+            *(ordered_PS_it++) = PS[s][i];
+          }
         }
       }
 
@@ -139,18 +154,23 @@ namespace gr {
     }
 
     void
-    viterbi_volk_state_impl::order_alpha_prev_in(int i, const float *alpha_prev,
-        const float *in_k, float *alpha_prev_ord, float *in_k_ord)
+    viterbi_volk_state_impl::compute_all_metrics(const float *alpha_prev,
+        const float *in_k, float *can_metrics)
     {
-          for(int s=0 ; s < d_FSM.S() ; ++s) {
-            if (i >= d_FSM.PS()[s].size()) {
-                alpha_prev_ord[s] = std::numeric_limits<float>::max();
-            }
-            else{
-                alpha_prev_ord[s] = alpha_prev[d_FSM.PS()[s][i]];
-			    in_k_ord[s] = in_k[d_FSM.OS()[d_FSM.PS()[s][i]*d_FSM.I() + d_FSM.PI()[s][i]]];
-            }
+      std::vector<int>::const_iterator ordered_OS_it = d_ordered_OS.begin();
+      std::vector<int>::const_iterator ordered_PS_it = d_ordered_PS.begin();
+
+      for(size_t i=0 ; i < d_max_size_PS_s ; ++i) {
+        for(int s=0 ; s < d_FSM.S() ; ++s) {
+          if (i < d_FSM.PS()[s].size()) {
+            *(can_metrics++) = alpha_prev[*(ordered_PS_it++)] + \
+              in_k[*(ordered_OS_it++)];
           }
+          else {
+            *(can_metrics++) = std::numeric_limits<float>::max();
+          }
+        }
+      }
     }
 
     //Volk optimized implementation adapted when the number of branch between
@@ -165,57 +185,64 @@ namespace gr {
       int tb_state, pidx;
       float min_metric = std::numeric_limits<float>::max();
 
-      std::vector<int> trace(K*S, 0);
+      //TODO: reserve once at construction, use iterators here
+      float *alpha_curr = (float*)malloc(S*sizeof(float));
+      float *alpha_prev = (float*)malloc(S*sizeof(float));
+      int *trace = (int*)malloc(K*S*sizeof(int));
+      std::fill(trace, trace + K*S, 0);
 
       //Variables to be allocated by volk (for best alignment)
-      float *can_metrics = (float*)volk_malloc(S*sizeof(float),
+      float *can_metrics = (float*)volk_malloc(S*d_max_size_PS_s*sizeof(float),
               volk_get_alignment());
-      float *alpha_curr = (float*)volk_malloc(S*sizeof(float),
-              volk_get_alignment());
-      float *alpha_prev = (float*)volk_malloc(S*sizeof(float),
-              volk_get_alignment());
-      float *in_tmp = (float*)volk_malloc(S*sizeof(float),
-              volk_get_alignment());
-
-      std::vector<int>::iterator trace_it = trace.begin();
 
       //If initial state was specified
       if(S0 != -1) {
-        for (float* alpha_prev_it = alpha_prev ;
-              alpha_prev_it < alpha_prev + S ; ++alpha_prev_it) {
-          *alpha_prev_it = std::numeric_limits<float>::max();
-        }
+        std::fill(alpha_prev, alpha_prev + S, std::numeric_limits<float>::max());
         alpha_prev[S0] = 0.0;
       }
       else {
-        for (float* alpha_prev_it = alpha_prev ;
-              alpha_prev_it < alpha_prev + S ; ++alpha_prev_it) {
-          *alpha_prev_it = 0.0;
-        }
+        std::fill(alpha_prev, alpha_prev + S, 0.0);
       }
 
       for(float* in_k=(float*)in ; in_k < (float*)in + K*O ; in_k += O) {
-		order_alpha_prev_in(0, alpha_prev, in_k, alpha_curr, in_tmp);
-        volk_32f_x2_add_32f(alpha_curr, alpha_curr, in_tmp, S);
+        //Reset minimum metric (used for normalization)
+        min_metric = std::numeric_limits<float>::max();
 
-        min_metric = *std::min_element(alpha_curr, alpha_curr + S);
+        //ADD
+        compute_all_metrics(alpha_prev, in_k, can_metrics);
+
+        //Pre-loop
+        for(int s=0 ; s < S ; ++s) {
+          *(alpha_curr++) = *(can_metrics++);
+        }
+        alpha_curr -= S;
 
         //Loop
         for(size_t i=1 ; i < d_max_size_PS_s ; ++i) {
-          //ACS for state s
-		  order_alpha_prev_in(i, alpha_prev, in_k, can_metrics, in_tmp);
-          volk_32f_x2_add_32f(can_metrics, can_metrics, in_tmp, S);
-
+          //Todo try to volkize using (a-b)>0
           for(int s=0 ; s < S ; ++s) {
             //COMPARE
-            if(can_metrics[s] < alpha_curr[s]) {
-              alpha_curr[s] = can_metrics[s];
+            if(*can_metrics < *alpha_curr) {
               //SELECT
-              trace_it[s] = i;
+              *alpha_curr = *can_metrics;
+              if(*alpha_curr < min_metric) {
+                min_metric = *alpha_curr;
+              }
+              *trace = i;
             }
+
+            //Update iterators
+            ++can_metrics;
+            ++alpha_curr;
+            ++trace;
           }
-          min_metric = *std::min_element(alpha_curr, alpha_curr + S);
+
+          //Reset iterators
+          alpha_curr -= S;
+          trace -= S;
         }
+        //Reset iterators
+        can_metrics -= S*d_max_size_PS_s;
 
         //Metrics normalization
         std::transform(alpha_curr, alpha_curr + S, alpha_curr,
@@ -225,7 +252,7 @@ namespace gr {
         std::swap(alpha_prev, alpha_curr);
 
         //Update iterators
-        trace_it += S;
+        trace += S;
       }
 
       //If final state was specified
@@ -238,13 +265,13 @@ namespace gr {
       }
 
       //Traceback
-      trace_it = trace.end() - S; //place trace_it at the last time index
+      trace -= S; //place trace at the last time index
 
       for(unsigned char* out_k = out+K-1 ; out_k >= out ; --out_k) {
         //Retrieve previous input index from trace
-        pidx=*(trace_it + tb_state);
-        //Update trace_it for next output symbol
-        trace_it -= S;
+        pidx=*(trace + tb_state);
+        //Update trace for next output symbol
+        trace -= S;
 
         //Output previous input
         *out_k = (unsigned char) PI[tb_state][pidx];
@@ -253,10 +280,11 @@ namespace gr {
         tb_state = PS[tb_state][pidx];
       }
 
-      volk_free(alpha_prev);
-      volk_free(alpha_curr);
+      trace += S; //place trace at the first time index
+
+      free(alpha_prev);
+      free(alpha_curr);
       volk_free(can_metrics);
-      volk_free(in_tmp);
     }
 
 
