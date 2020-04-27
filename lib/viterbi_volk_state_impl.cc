@@ -205,9 +205,6 @@ namespace gr {
       }
 
       for(float* in_k=(float*)in ; in_k < (float*)in + K*O ; in_k += O) {
-        //Reset minimum metric (used for normalization)
-        min_metric = std::numeric_limits<float>::max();
-
         //ADD
         compute_all_metrics(alpha_prev, in_k, can_metrics);
 
@@ -216,6 +213,7 @@ namespace gr {
           *(alpha_curr++) = *(can_metrics++);
         }
         alpha_curr -= S;
+        min_metric = *std::min_element(alpha_curr, alpha_curr+S);
 
         //Loop
         for(size_t i=1 ; i < d_max_size_PS_s ; ++i) {
