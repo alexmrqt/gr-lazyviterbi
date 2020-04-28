@@ -41,17 +41,30 @@ namespace gr {
       //Same as d_FSM.PS(), but flattened:
       //d_ordered_PS[i*S+s] = d_FSM.PS()[s][i]
       std::vector<int> d_ordered_PS;
+      //Input metrics, ordered as d_ordered_in_k[i] = in_k[d_ordered_OS[i]]
+      float *d_ordered_in_k;
       //Max size of PS[s]
       size_t d_max_size_PS_s;
 
+      //A vector of S zeros
+      float *d_zeros;
+
+      //Store current state metrics
+      float *d_alpha_curr;
+      //Store next state metrics
+      float *d_alpha_prev;
+      //Store next state candidate metrics
+      float *d_can_metrics;
+      //Traceback vector
+      int *d_trace;
+
       protected:
-        //void order_alpha_prev_in(int i, const float *alpha_prev, const float *in_k,
-	//		  float *alpha_prev_ord, float *in_k_ord);
         void compute_all_metrics(const float *alpha_prev, const float *in_k,
             float *can_metrics);
 
      public:
       viterbi_volk_state_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
+      ~viterbi_volk_state_impl();
 
       gr::trellis::fsm FSM() const  { return d_FSM; }
       int K()  const { return d_K; }
