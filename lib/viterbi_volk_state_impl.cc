@@ -89,9 +89,6 @@ namespace gr {
       }
 
       //Memory reservations
-      d_zeros = (float*)volk_malloc(S * sizeof(float), volk_get_alignment());
-      std::fill(d_zeros, d_zeros + S, 0.0);
-
       d_alpha_curr = (float*)volk_malloc(S*sizeof(float), volk_get_alignment());
 
       d_alpha_prev = (float*)volk_malloc(S*sizeof(float), volk_get_alignment());
@@ -110,7 +107,6 @@ namespace gr {
 
     viterbi_volk_state_impl::~viterbi_volk_state_impl()
     {
-      volk_free(d_zeros);
       volk_free(d_alpha_prev);
       volk_free(d_alpha_curr);
       volk_free(d_can_metrics);
@@ -226,6 +222,7 @@ namespace gr {
       //Iterators
       int *trace_it = d_trace;
       float *can_metrics_it = d_can_metrics;
+      float *alpha_curr_it;
 
       //Initialize traceback vector
       std::fill(trace_it, trace_it + K*S, 0);
@@ -239,6 +236,7 @@ namespace gr {
       else {
         std::fill(d_alpha_prev, d_alpha_prev + S, 0.0);
       }
+
       for(float* in_k=(float*)in ; in_k < (float*)in + K*O ; in_k += O) {
         //ADD
         compute_all_metrics(d_alpha_prev, in_k, d_can_metrics);
@@ -249,16 +247,14 @@ namespace gr {
 
         //Loop
         for(size_t i=1 ; i < d_max_size_PS_s ; ++i) {
-          //d_can_metrics[s] = fmax(0.0, d_alpha_curr[s] - d_can_metrics[s])
-          volk_32f_x2_subtract_32f(can_metrics_it, d_alpha_curr, can_metrics_it, S);
-          volk_32f_x2_max_32f(can_metrics_it, d_zeros, can_metrics_it, S);
+          //COMPARE
+          //d_alpha_curr[s] = min(d_alpha_curr[s], d_can_metrics[s])
+          volk_32f_x2_min_32f(d_alpha_curr, d_alpha_curr, can_metrics_it, S);
 
-          //d_alpha_curr[s] -= d_can_metrics[s]
-          volk_32f_x2_subtract_32f(d_alpha_curr, d_alpha_curr, can_metrics_it, S);
-
+          alpha_curr_it = d_alpha_curr;
           for(int s=0 ; s < S ; ++s) {
-            //                    COMPARE             //  SELECT
-            *(trace_it++) = (*(can_metrics_it++) > 0.0)?i:*trace_it;
+            //SELECT
+            *(trace_it++) = (*(can_metrics_it++) == (*alpha_curr_it++))?i:*trace_it;
           }
           
           //Update iterators

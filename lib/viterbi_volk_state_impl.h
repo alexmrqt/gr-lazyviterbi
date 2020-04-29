@@ -46,9 +46,6 @@ namespace gr {
       //Max size of PS[s]
       size_t d_max_size_PS_s;
 
-      //A vector of S zeros
-      float *d_zeros;
-
       //Store current state metrics
       float *d_alpha_curr;
       //Store next state metrics
