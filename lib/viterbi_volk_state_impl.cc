@@ -40,9 +40,9 @@ namespace gr {
      */
     viterbi_volk_state_impl::viterbi_volk_state_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK)
       : gr::block("viterbi_volk_state",
-              gr::io_signature::make(1, -1, sizeof(float)),
-              gr::io_signature::make(1, -1, sizeof(char))),
-        d_FSM(FSM), d_K(K), d_ordered_OS(FSM.S()*FSM.I()), d_ordered_PS(FSM.S()*FSM.I())
+          gr::io_signature::make(1, -1, sizeof(float)),
+          gr::io_signature::make(1, -1, sizeof(char))),
+      d_FSM(FSM), d_K(K), d_ordered_OS(FSM.S()*FSM.I()), d_ordered_PS(FSM.S()*FSM.I())
     {
       //S0 and SK must represent a state of the trellis
       if(S0 >= 0 || S0 < d_FSM.S()) {
@@ -94,7 +94,7 @@ namespace gr {
       d_alpha_prev = (float*)volk_malloc(S*sizeof(float), volk_get_alignment());
 
       d_can_metrics = (float*)volk_malloc(S*d_max_size_PS_s*sizeof(float),
-              volk_get_alignment());
+          volk_get_alignment());
 
       d_ordered_in_k = (float*)volk_malloc(d_max_size_PS_s * S * sizeof(float),
           volk_get_alignment());
@@ -156,9 +156,9 @@ namespace gr {
 
     int
     viterbi_volk_state_impl::general_work (int noutput_items,
-                       gr_vector_int &ninput_items,
-                       gr_vector_const_void_star &input_items,
-                       gr_vector_void_star &output_items)
+        gr_vector_int &ninput_items,
+        gr_vector_const_void_star &input_items,
+        gr_vector_void_star &output_items)
     {
       gr::thread::scoped_lock guard(d_setlock);
       int nstreams = input_items.size();
@@ -256,7 +256,7 @@ namespace gr {
             //SELECT
             *(trace_it++) = (*(can_metrics_it++) == (*alpha_curr_it++))?i:*trace_it;
           }
-          
+
           //Update iterators
           trace_it -= S;
         }
