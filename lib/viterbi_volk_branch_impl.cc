@@ -42,7 +42,8 @@ namespace gr {
       : gr::block("viterbi_volk_branch",
               gr::io_signature::make(1, -1, sizeof(float)),
               gr::io_signature::make(1, -1, sizeof(char))),
-        d_FSM(FSM), d_K(K), d_ordered_OS(FSM.S()*FSM.I())
+        d_FSM(FSM), d_K(K), d_ordered_OS(FSM.S()*FSM.I()),
+        d_ordered_PS(FSM.S()*FSM.I())
     {
       //S0 and SK must represent a state of the trellis
       if(S0 >= 0 || S0 < d_FSM.S()) {
@@ -67,20 +68,42 @@ namespace gr {
 
       //Compute ordered_OS and max_size_PS_s
       std::vector<int>::iterator ordered_OS_it = d_ordered_OS.begin();
-      d_max_size_PS_s = 0;
+      std::vector<int>::iterator ordered_PS_it = d_ordered_PS.begin();
 
+      d_n_metrics = 0;
       for(int s=0 ; s < S ; ++s) {
         for(size_t i=0 ; i<(PS[s]).size() ; ++i) {
           *(ordered_OS_it++) = OS[PS[s][i]*I + PI[s][i]];
-        }
-
-        if ((PS[s]).size() > d_max_size_PS_s) {
-          d_max_size_PS_s = (PS[s]).size();
+          *(ordered_PS_it++) = PS[s][i];
+          ++d_n_metrics;
         }
       }
 
+      //Memory reservations
+      d_alpha_curr = (float*)volk_malloc(S*sizeof(float), volk_get_alignment());
+
+      d_alpha_prev = (float*)volk_malloc(S*sizeof(float), volk_get_alignment());
+
+      d_can_metrics = (float*)volk_malloc(d_n_metrics*sizeof(float),
+          volk_get_alignment());
+
+      d_ordered_in_k = (float*)volk_malloc(d_n_metrics * sizeof(float),
+          volk_get_alignment());
+
+      d_trace = (uint32_t*)volk_malloc(K*S*sizeof(uint32_t),
+          volk_get_alignment());
+
       set_relative_rate(1.0 / ((double)d_FSM.O()));
       set_output_multiple(d_K);
+    }
+
+    viterbi_volk_branch_impl::~viterbi_volk_branch_impl()
+    {
+      volk_free(d_alpha_prev);
+      volk_free(d_alpha_curr);
+      volk_free(d_can_metrics);
+      volk_free(d_ordered_in_k);
+      volk_free(d_trace);
     }
 
     void
@@ -148,6 +171,24 @@ namespace gr {
       return noutput_items;
     }
 
+    void
+    viterbi_volk_branch_impl::compute_all_metrics(const float *alpha_prev,
+        const float *in_k, float *can_metrics)
+    {
+      std::vector<int>::const_iterator ordered_OS_it = d_ordered_OS.begin();
+      std::vector<int>::const_iterator ordered_PS_it = d_ordered_PS.begin();
+
+      float *ordered_in_k_it = d_ordered_in_k;
+      float *can_metrics_it = can_metrics;
+
+      for(size_t i=0 ; i < d_n_metrics ; ++i) {
+        *(can_metrics_it++) = alpha_prev[*(ordered_PS_it++)];
+        *(ordered_in_k_it++) = in_k[*(ordered_OS_it++)];
+      }
+
+      volk_32f_x2_subtract_32f(can_metrics, can_metrics, d_ordered_in_k, d_n_metrics);
+    }
+
     //Volk optimized implementation adapted when the number of branch between
     //pairs of states is greater than the number of states.
     void
@@ -158,105 +199,74 @@ namespace gr {
         const float *in, unsigned char *out)
     {
       int tb_state, pidx;
-      float min_metric = std::numeric_limits<float>::max();
+      size_t n_branch_state = 0;
 
-      std::vector<int> trace(K*S, 0);
-      std::vector<float> alpha_prev(S, std::numeric_limits<float>::max());
-      std::vector<float> alpha_curr(S, std::numeric_limits<float>::max());
-
-      //Variables to be allocated by volk (for best alignment)
-      float *can_vector = (float*)volk_malloc(d_max_size_PS_s*sizeof(float),
-              volk_get_alignment());
-      float *alpha_tmp = (float*)volk_malloc(d_max_size_PS_s*sizeof(float),
-              volk_get_alignment());
       uint32_t *max_idx = (uint32_t*)volk_malloc(sizeof(uint32_t),
           volk_get_alignment());
 
-      std::vector<float>::iterator alpha_curr_it;
-      std::vector<int>::const_iterator PS_it;
-      std::vector<int>::iterator trace_it = trace.begin();
-      std::vector<int>::const_iterator ordered_OS_it = ordered_OS.begin();
+      std::vector< std::vector<int> >::const_iterator PS_s;
+
+      float *alpha_curr_it;
+      float *can_metrics_it = d_can_metrics;
+      uint32_t *trace_it = d_trace;
 
       //If initial state was specified
       if(S0 != -1) {
-        alpha_prev[S0] = 0.0;
+        std::fill(d_alpha_prev, d_alpha_prev + S,
+            -std::numeric_limits<float>::max());
+        d_alpha_prev[S0] = 0.0;
       }
       else {
-        for (std::vector<float>::iterator alpha_prev_it = alpha_prev.begin() ;
-              alpha_prev_it != alpha_prev.end() ; ++alpha_prev_it) {
-          *alpha_prev_it = 0.0;
-        }
+        std::fill(d_alpha_prev, d_alpha_prev + S, 0.0);
       }
 
       for(float* in_k=(float*)in ; in_k < (float*)in + K*O ; in_k += O) {
-        //Current path metric iterator
-        alpha_curr_it = alpha_curr.begin();
-        ordered_OS_it = ordered_OS.begin();
+        //ADD
+        compute_all_metrics(d_alpha_prev, in_k, d_can_metrics);
 
-        //Reset minimum metric (used for normalization)
-        min_metric = std::numeric_limits<float>::max();
+        alpha_curr_it = d_alpha_curr;
+        PS_s = PS.begin();
+        //COMPARE
+        for(int s = 0 ; s < S ; ++s) {
+          n_branch_state = (*PS_s++).size();
 
-        //For each state
-        for(std::vector< std::vector<int> >::const_iterator PS_s = PS.begin() ;
-              PS_s != PS.end() ; ++PS_s) {
+          volk_32f_index_max_32u(trace_it, can_metrics_it, n_branch_state);
 
-          //Iterators for previous state and previous input lists
-          PS_it=(*PS_s).begin();
-
-          //ACS for state s
-          for(float* can_vector_i = can_vector ;
-              can_vector_i < can_vector + (*PS_s).size() ; ++can_vector_i) {
-            //can_vector_i = -in_k[OS[PS[s][i]*I + PI[s][i]]]
-            *can_vector_i = -in_k[*(ordered_OS_it++)];
-          }
-          for(float* alpha_tmp_i = alpha_tmp ;
-              alpha_tmp_i < alpha_tmp + (*PS_s).size() ; ++alpha_tmp_i) {
-            //alpha_tmp[i] = -alpha_prev[PS[s][i]]
-            *alpha_tmp_i = alpha_prev[*(PS_it++)];
-          }
-          //ADD
-          volk_32f_x2_subtract_32f(can_vector, can_vector, alpha_tmp, (*PS_s).size());
-          //COMPARE
-          volk_32f_index_max_32u(max_idx, can_vector, (*PS_s).size());
           //SELECT
-          *(alpha_curr_it++) = -can_vector[*max_idx];
-          *(trace_it++) = *max_idx;
+          *(alpha_curr_it++) = can_metrics_it[*(trace_it++)];
 
-          //Update min_metric if necessary
-          if(-can_vector[*max_idx] < min_metric) {
-            min_metric = -can_vector[*max_idx];
-          }
+          //Update pointer
+          can_metrics_it += n_branch_state;
         }
 
-        //Metrics normalization
-        std::transform(alpha_curr.begin(), alpha_curr.end(), alpha_curr.begin(),
-            std::bind2nd(std::minus<double>(), min_metric));
-
         //At this point, current path metrics becomes previous path metrics
-        alpha_prev.swap(alpha_curr);
-      }
+        std::swap(d_alpha_prev, d_alpha_curr);
 
-      //Dealocate max_idx and can_vector
-      volk_free(max_idx);
-      volk_free(can_vector);
-      volk_free(alpha_tmp);
+        //Metrics normalization
+        volk_32f_index_max_32u(max_idx, d_alpha_prev, S);
+        std::transform(d_alpha_prev, d_alpha_prev + S, d_alpha_prev,
+            std::bind2nd(std::minus<float>(), d_alpha_prev[*max_idx]));
+
+        //Update iterators
+        can_metrics_it = d_can_metrics;
+      }
 
       //If final state was specified
       if(SK != -1) {
         tb_state = SK;
       }
       else{
-        //at this point, alpha_prev contains the path metrics of states after time K
-        tb_state = (int)(min_element(alpha_prev.begin(), alpha_prev.end()) - alpha_prev.begin());
+        //at this point, d_alpha_prev contains the path metrics of states after time K
+        tb_state = (int)(*max_idx);
       }
 
       //Traceback
-      trace_it = trace.end() - S; //place trace_it at the last time index
+      trace_it -= S; //place trace at the last time index
 
       for(unsigned char* out_k = out+K-1 ; out_k >= out ; --out_k) {
-        //Retrieve previous input index from trace
+        //Retrieve previous input index from d_trace
         pidx=*(trace_it + tb_state);
-        //Update trace_it for next output symbol
+        //Update d_trace_it for next output symbol
         trace_it -= S;
 
         //Output previous input
@@ -265,6 +275,9 @@ namespace gr {
         //Update tb_state with the previous state on the shortest path
         tb_state = PS[tb_state][pidx];
       }
+
+      //Dealocate max_idx
+      volk_free(max_idx);
     }
 
   } /* namespace lazyviterbi */
