@@ -28,38 +28,45 @@ namespace gr {
 
     class viterbi_impl : public viterbi
     {
-     private:
-      gr::trellis::fsm d_FSM; //Trellis description
-      int d_K;                //Number of trellis sections
-      int d_S0;               //Initial state idx (-1 if unknown)
-      int d_SK;               //Final state idx (-1 if unknown)
+      private:
+        gr::trellis::fsm d_FSM; //Trellis description
+        int d_K;                //Number of trellis sections
+        int d_S0;               //Initial state idx (-1 if unknown)
+        int d_SK;               //Final state idx (-1 if unknown)
 
-      //Same as d_FSM.OS(), but re-ordered in the following way:
-      //d_ordered_OS[s*I+i] = d_FSM.OS()[d_FSM.PS()[s][i]*I + d_FSM.PI()[s][i]]
-      std::vector<int> d_ordered_OS;
+        //Same as d_FSM.OS(), but re-ordered in the following way:
+        //d_ordered_OS[s*I+i] = d_FSM.OS()[d_FSM.PS()[s][i]*I + d_FSM.PI()[s][i]]
+        std::vector<int> d_ordered_OS;
 
-     public:
-      viterbi_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
+        //Store current state metrics
+        std::vector<float> d_alpha_prev;
+        //Store next state metrics
+        std::vector<float> d_alpha_curr;
+        //Traceback vector
+        std::vector<int> d_trace;
 
-      gr::trellis::fsm FSM() const  { return d_FSM; }
-      int K()  const { return d_K; }
-      int S0()  const { return d_S0; }
-      int SK()  const { return d_SK; }
+      public:
+        viterbi_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
 
-      void set_FSM(const gr::trellis::fsm &FSM);
-      void set_K(int K);
-      void set_S0(int S0);
-      void set_SK(int SK);
+        gr::trellis::fsm FSM() const  { return d_FSM; }
+        int K()  const { return d_K; }
+        int S0()  const { return d_S0; }
+        int SK()  const { return d_SK; }
 
-      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+        void set_FSM(const gr::trellis::fsm &FSM);
+        void set_K(int K);
+        void set_S0(int S0);
+        void set_SK(int SK);
 
-      int general_work(int noutput_items, gr_vector_int &ninput_items,
-          gr_vector_const_void_star &input_items, gr_vector_void_star &output_items);
+        void forecast (int noutput_items, gr_vector_int &ninput_items_required);
 
-      void viterbi_algorithm(int I, int S, int O, const std::vector<int> &NS,
-          const std::vector<int> &ordered_OS, const std::vector< std::vector<int> > &PS,
-          const std::vector< std::vector<int> > &PI, int K, int S0, int SK,
-          const float *in, unsigned char *out);
+        int general_work(int noutput_items, gr_vector_int &ninput_items,
+            gr_vector_const_void_star &input_items, gr_vector_void_star &output_items);
+
+        void viterbi_algorithm(int I, int S, int O, const std::vector<int> &NS,
+            const std::vector<int> &ordered_OS, const std::vector< std::vector<int> > &PS,
+            const std::vector< std::vector<int> > &PI, int K, int S0, int SK,
+            const float *in, unsigned char *out);
     };
 
   } // namespace lazyviterbi
