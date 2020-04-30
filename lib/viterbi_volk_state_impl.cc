@@ -204,7 +204,7 @@ namespace gr {
         }
       }
 
-      volk_32f_x2_add_32f(can_metrics, can_metrics, d_ordered_in_k, n_pts);
+      volk_32f_x2_subtract_32f(can_metrics, can_metrics, d_ordered_in_k, n_pts);
     }
 
     //Volk optimized implementation adapted when the number of branch between
@@ -217,7 +217,9 @@ namespace gr {
         const float *in, unsigned char *out)
     {
       int tb_state, pidx;
-      float *min_metric_ptr;
+      //float *min_metric_ptr;
+      uint32_t *max_idx = (uint32_t*)volk_malloc(sizeof(uint32_t),
+          volk_get_alignment());
 
       //Iterators
       int *trace_it = d_trace;
@@ -230,7 +232,7 @@ namespace gr {
       //If initial state was specified
       if(S0 != -1) {
         std::fill(d_alpha_prev, d_alpha_prev + S,
-            std::numeric_limits<float>::max());
+            -std::numeric_limits<float>::max());
         d_alpha_prev[S0] = 0.0;
       }
       else {
@@ -248,12 +250,12 @@ namespace gr {
         //Loop
         for(size_t i=1 ; i < d_max_size_PS_s ; ++i) {
           //COMPARE
-          //d_alpha_curr[s] = min(d_alpha_curr[s], d_can_metrics[s])
-          volk_32f_x2_min_32f(d_alpha_curr, d_alpha_curr, can_metrics_it, S);
+          //d_alpha_curr[s] = max(d_alpha_curr[s], d_can_metrics[s])
+          volk_32f_x2_max_32f(d_alpha_curr, d_alpha_curr, can_metrics_it, S);
 
+          //SELECT
           alpha_curr_it = d_alpha_curr;
           for(int s=0 ; s < S ; ++s) {
-            //SELECT
             *(trace_it++) = (*(can_metrics_it++) == (*alpha_curr_it++))?i:*trace_it;
           }
 
@@ -265,9 +267,9 @@ namespace gr {
         std::swap(d_alpha_prev, d_alpha_curr);
 
         //Metrics normalization
-        min_metric_ptr = std::min_element(d_alpha_prev, d_alpha_prev + S);
+        volk_32f_index_max_32u(max_idx, d_alpha_prev, S);
         std::transform(d_alpha_prev, d_alpha_prev + S, d_alpha_prev,
-            std::bind2nd(std::minus<float>(), *min_metric_ptr));
+            std::bind2nd(std::minus<float>(), d_alpha_prev[*max_idx]));
 
         //Update iterators
         trace_it += S;
@@ -280,7 +282,7 @@ namespace gr {
       }
       else{
         //at this point, alpha_prev contains the path metrics of states after time K
-        tb_state = (int)(min_metric_ptr - d_alpha_prev);
+        tb_state = (int)(*max_idx);
       }
 
       //Traceback
@@ -298,6 +300,9 @@ namespace gr {
         //Update tb_state with the previous state on the shortest path
         tb_state = PS[tb_state][pidx];
       }
+
+      //Dealocate max_idx
+      volk_free(max_idx);
     }
 
 
