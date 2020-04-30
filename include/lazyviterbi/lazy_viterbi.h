@@ -88,14 +88,6 @@ namespace gr {
       virtual int SK()  const = 0;
 
       /*!
-       * Set the trellis to be used.
-       */
-      virtual void set_FSM(const gr::trellis::fsm &FSM) = 0;
-      /*!
-       * Set the data blocks length to be used.
-       */
-      virtual void set_K(int K) = 0;
-      /*!
        * Gives the initial state of the encoder to the decoder (set to -1 if unknown).
        */
       virtual void set_S0(int S0) = 0;

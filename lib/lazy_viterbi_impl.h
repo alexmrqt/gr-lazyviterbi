@@ -37,17 +37,20 @@ namespace gr {
       int d_K;
       int d_S0;
       int d_SK;
+
       /*
        * Real nodes, to be addressed by real_nodes[time_index*d_FSM.S() + state_index]
        */
-      std::vector<node> real_nodes;
+      std::vector<node> d_real_nodes;
       /*
        * Shadow nodes. First dimension is used to make a circular buffer of 256
        * vectors (corresponding to the 256 possible values of branch metrics).
        * The vector nested stores shadow_nodes whose incoming branch have same
        * metrics.
        */
-      std::vector<std::vector<shadow_node> > shadow_nodes;
+      std::vector<std::vector<shadow_node> > d_shadow_nodes;
+      //Store path metrics
+      std::vector<uint8_t> d_metrics;
 
      public:
       lazy_viterbi_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
@@ -57,8 +60,6 @@ namespace gr {
       int S0()  const { return d_S0; }
       int SK()  const { return d_SK; }
 
-      void set_FSM(const gr::trellis::fsm &FSM);
-      void set_K(int K);
       void set_S0(int S0);
       void set_SK(int SK);
 
