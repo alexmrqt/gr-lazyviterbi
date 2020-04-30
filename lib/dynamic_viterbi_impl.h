@@ -52,8 +52,6 @@ namespace gr {
       float thres()  const { return d_thres; }
       bool is_lazy()  const { return d_is_lazy; }
 
-      void set_FSM(const gr::trellis::fsm &FSM);
-      void set_K(int K);
       void set_S0(int S0);
       void set_SK(int SK);
       void set_thres(float thres);

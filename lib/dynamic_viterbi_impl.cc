@@ -50,30 +50,6 @@ namespace gr {
     }
 
     void
-    dynamic_viterbi_impl::set_FSM(const gr::trellis::fsm &FSM)
-    {
-      gr::thread::scoped_lock guard(d_setlock);
-
-      d_FSM = FSM;
-      d_lazy_block.set_FSM(FSM);
-      d_viterbi_block.set_FSM(FSM);
-
-      set_relative_rate(1.0 / ((double)d_FSM.O()));
-    }
-
-    void
-    dynamic_viterbi_impl::set_K(int K)
-    {
-      gr::thread::scoped_lock guard(d_setlock);
-
-      d_K = K;
-      d_lazy_block.set_K(K);
-      d_viterbi_block.set_K(K);
-
-      set_output_multiple(d_K);
-    }
-
-    void
     dynamic_viterbi_impl::set_S0(int S0)
     {
       gr::thread::scoped_lock guard(d_setlock);

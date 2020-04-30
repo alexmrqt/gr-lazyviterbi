@@ -107,22 +107,6 @@ namespace gr {
     }
 
     void
-    viterbi_volk_branch_impl::set_FSM(const gr::trellis::fsm &FSM)
-    {
-      gr::thread::scoped_lock guard(d_setlock);
-      d_FSM = FSM;
-      set_relative_rate(1.0 / ((double)d_FSM.O()));
-    }
-
-    void
-    viterbi_volk_branch_impl::set_K(int K)
-    {
-      gr::thread::scoped_lock guard(d_setlock);
-      d_K = K;
-      set_output_multiple(d_K);
-    }
-
-    void
     viterbi_volk_branch_impl::set_S0(int S0)
     {
       gr::thread::scoped_lock guard(d_setlock);

@@ -53,8 +53,6 @@ namespace gr {
         int S0()  const { return d_S0; }
         int SK()  const { return d_SK; }
 
-        void set_FSM(const gr::trellis::fsm &FSM);
-        void set_K(int K);
         void set_S0(int S0);
         void set_SK(int SK);
 
