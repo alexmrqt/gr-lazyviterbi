@@ -39,13 +39,17 @@ There is no best implementation. Performance depends on the trellis, the SNR of 
 Bellow is bitrate comparisons for some trellis, using a computer equiped with an Intel core i5 775 (see `examples/bitrate_vs_ebn0.py` for details on simulation parameters).
 
 (5,7) Convolutional code.
+
 ![(5,7) CC](examples/figures/i5_775_5_7_bitrate.png)
 
 (15,13) Recursive Systematic Convolutional (RSC) code.
+
 ![(15,13) RSC](examples/figures/i5_775_rsc_15_13_bitrate.png)
 
 (171,133) Convolutional code.
+
 ![(171,133) CC](examples/figures/i5_775_171_133_bitrate.png)
 
 (229,159) Convolutional code.
+
 ![(229,159) CC](examples/figures/i5_775_229_159_bitrate.png)
