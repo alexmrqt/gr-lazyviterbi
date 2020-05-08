@@ -22,12 +22,12 @@
 # Setup library
 ########################################################################
 include(GrPlatform) #define LIB_SUFFIX
-
 list(APPEND lazyviterbi_sources
     viterbi_impl.cc
+    viterbi_volk_branch_impl.cc
+    viterbi_volk_state_impl.cc 
     lazy_viterbi_impl.cc
-    dynamic_viterbi_impl.cc
-)
+    dynamic_viterbi_impl.cc	)
 
 set(lazyviterbi_sources "${lazyviterbi_sources}" PARENT_SCOPE)
 if(NOT lazyviterbi_sources)

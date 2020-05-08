@@ -1,0 +1,55 @@
+id: lazyviterbi_viterbi_volk_state
+label: viterbi_volk_state
+category: '[lazyviterbi]'
+
+templates:
+  imports: |-
+      import lazyviterbi
+      from gnuradio import trellis
+  make: lazyviterbi.viterbi_volk_state(trellis.fsm(${fsm_args}), ${block_size}, ${init_state}, ${final_state})
+
+parameters:
+- id: fsm_args
+  label: FSM Args
+  dtype: raw
+- id: block_size
+  label: Block Size
+  dtype: int
+- id: init_state
+  label: Initial State
+  default: 0
+  dtype: int
+- id: final_state
+  label: Final State
+  default: -1
+  dtype: int
+
+#  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
+#  Keys include:
+#      * label (an identifier for the GUI)
+#      * domain (optional - stream or message. Default is stream)
+#      * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
+#      * vlen (optional - data stream vector length. Default is 1)
+#      * optional (optional - set to 1 for optional inputs. Default is 0)
+inputs:
+- label: in
+  domain: stream
+  dtype: float
+
+outputs:
+- label: in
+  domain: stream
+  dtype: byte
+
+documentation: |-
+  Viterbi Decoder with Volk optimization for parallel processing of branches. \
+  Use this when the number of state is larger that the number
+  of branch leading to states. \
+  The fsm arguments are passed directly to the trellis.fsm() constructor. \
+  Block size is the length of the sequence taken into account for decoding. \
+  Initial state must contain the initial state of the encoder (-1 if unknown). \
+  Final state must contain the final state of the encoder (-1 if unknown).
+
+#  'file_format' specifies the version of the GRC yml format used in the file
+#  and should usually not be changed.
+file_format: 1

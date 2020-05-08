@@ -42,7 +42,7 @@ namespace gr {
       : gr::block("lazy_viterbi",
               gr::io_signature::make(1, -1, sizeof(float)),
               gr::io_signature::make(1, -1, sizeof(char))),
-        d_FSM(FSM), d_K(K)
+        d_FSM(FSM), d_K(K), d_metrics(K*d_FSM.O())
     {
       struct node new_node = {0, -1, false}; //{prev_state_idx, prev_input, expanded}
 
@@ -62,45 +62,14 @@ namespace gr {
       }
 
       //Allocate expanded and shadow nodes containers
-      shadow_nodes.resize(256);  //256=2^8=2^sizeof(uint8_t)
-      real_nodes.resize((d_K+1)*d_FSM.S());
+      d_shadow_nodes.resize(256);  //256=2^8=2^sizeof(uint8_t)
+      d_real_nodes.resize((d_K+1)*d_FSM.S());
       //Set all real nodes to non-expanded
-      for(std::vector<node>::iterator it=real_nodes.begin() ; it != real_nodes.end() ; ++it) {
+      for(std::vector<node>::iterator it=d_real_nodes.begin() ; it != d_real_nodes.end() ; ++it) {
         (*it).expanded=false;
       }
 
       set_relative_rate(1.0 / ((double)d_FSM.O()));
-      set_output_multiple(d_K);
-    }
-
-    void
-    lazy_viterbi_impl::set_FSM(const gr::trellis::fsm &FSM)
-    {
-      gr::thread::scoped_lock guard(d_setlock);
-      d_FSM = FSM;
-      //Reallocate shadow nodes containers
-      real_nodes.resize((d_K+1)*d_FSM.S());
-      //Set all real nodes to non-expanded
-      for(std::vector<node>::iterator it=real_nodes.begin() ; it != real_nodes.end() ; ++it) {
-        (*it).expanded=false;
-      }
-
-      set_relative_rate(1.0 / ((double)d_FSM.O()));
-    }
-
-    void
-    lazy_viterbi_impl::set_K(int K)
-    {
-      gr::thread::scoped_lock guard(d_setlock);
-
-      d_K = K;
-      //Reallocate shadow nodes containers
-      real_nodes.resize((d_K+1)*d_FSM.S());
-      //Set all real nodes to non-expanded
-      for(std::vector<node>::iterator it=real_nodes.begin() ; it != real_nodes.end() ; ++it) {
-        (*it).expanded=false;
-      }
-
       set_output_multiple(d_K);
     }
 
@@ -179,7 +148,6 @@ namespace gr {
         unsigned char *out)
     {
       //***INIT***//
-      std::vector<uint8_t> metrics(K*O);
       std::vector<uint8_t>::iterator metrics_os_it;
       uint8_t min_dist_idx = 0;
       struct node new_node;
@@ -195,7 +163,7 @@ namespace gr {
         new_shadow.prev_state_idx=0;
         new_shadow.prev_input=-1;
 
-        shadow_nodes[0].push_back(new_shadow);
+        d_shadow_nodes[0].push_back(new_shadow);
       }
       else {
         //For each state
@@ -205,28 +173,28 @@ namespace gr {
           new_shadow.prev_state_idx=0;
           new_shadow.prev_input=-1;
 
-          shadow_nodes[0].push_back(new_shadow);
+          d_shadow_nodes[0].push_back(new_shadow);
         }
       }
 
       //***NORMALIZE METRICS***//
-      lazy_viteri_metrics_norm(in, &metrics[0], K, O);
+      lazy_viteri_metrics_norm(in, &d_metrics[0], K, O);
 
       //***FIND SHORTEST PATH***//
       do {
         //Select another candidate if this node has already been expanded
         do {
           //Find minimum distance index
-          while(shadow_nodes[min_dist_idx].empty()) {
+          while(d_shadow_nodes[min_dist_idx].empty()) {
             ++min_dist_idx;
           }
 
           //Retrieve a candidate at minimum distance
-          curr_shadow = shadow_nodes[min_dist_idx].back();
-          shadow_nodes[min_dist_idx].pop_back();
+          curr_shadow = d_shadow_nodes[min_dist_idx].back();
+          d_shadow_nodes[min_dist_idx].pop_back();
 
           //Update iterator
-          expanded_it = real_nodes.begin() + curr_shadow.time_idx*S
+          expanded_it = d_real_nodes.begin() + curr_shadow.time_idx*S
             + curr_shadow.state_idx;
         } while((*expanded_it).expanded);
 
@@ -242,7 +210,7 @@ namespace gr {
 
         //Initialize iterators
         expanded_it += S - curr_shadow.state_idx; //real_nodes[curr_shadow.time_idx*S]
-        metrics_os_it = metrics.begin() + curr_shadow.time_idx*O; //metrics[curr_shadow.time_idx*O]
+        metrics_os_it = d_metrics.begin() + curr_shadow.time_idx*O; //metrics[curr_shadow.time_idx*O]
         NS_it = NS.begin() + curr_shadow.state_idx*I; //NS[curr_shadow.state_idx*I]
         OS_it = OS.begin() + curr_shadow.state_idx*I; //OS[curr_shadow.state_idx*I]
 
@@ -254,7 +222,7 @@ namespace gr {
 
           //Add non-expanded neighbors as shadow nodes
           if((*(expanded_it + new_shadow.state_idx)).expanded == false) {
-            shadow_nodes[(uint8_t)(min_dist_idx
+            d_shadow_nodes[(uint8_t)(min_dist_idx
                 + *(metrics_os_it + *OS_it)
                 )].push_back(new_shadow);
           }
@@ -268,7 +236,7 @@ namespace gr {
       //***TRACEBACK***//
       new_node.prev_input = curr_shadow.prev_input;
       new_node.prev_state_idx = curr_shadow.prev_state_idx;
-      expanded_it = real_nodes.begin() + (K-1)*S; //Place expanded_it at the last time index
+      expanded_it = d_real_nodes.begin() + (K-1)*S; //Place expanded_it at the last time index
       for(unsigned char* out_k=out + K-1 ; out_k >= out ; --out_k) {
         *out_k = (unsigned char)new_node.prev_input;
         new_node = *(expanded_it + new_node.prev_state_idx);
@@ -278,10 +246,10 @@ namespace gr {
 
       //Clear expanded and shadow nodes containers
       for(size_t i=0 ; i<256 ; ++i) {
-        shadow_nodes[i].clear();
+        d_shadow_nodes[i].clear();
       }
 
-      for(std::vector<node>::iterator it=real_nodes.begin() ; it != real_nodes.end() ; ++it) {
+      for(std::vector<node>::iterator it=d_real_nodes.begin() ; it != d_real_nodes.end() ; ++it) {
         (*it).expanded=false;
       }
     }

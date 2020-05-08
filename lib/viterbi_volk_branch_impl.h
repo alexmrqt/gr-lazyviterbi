@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2018 Free Software Foundation, Inc.
+ * Copyright 2019 Alexandre Marquet.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,16 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_LAZYVITERBI_VITERBI_IMPL_H
-#define INCLUDED_LAZYVITERBI_VITERBI_IMPL_H
+#ifndef INCLUDED_LAZYVITERBI_VITERBI_VOLK_BRANCH_IMPL_H
+#define INCLUDED_LAZYVITERBI_VITERBI_VOLK_BRANCH_IMPL_H
 
-#include <lazyviterbi/viterbi.h>
+#include <lazyviterbi/viterbi_volk_branch.h>
+#include <volk/volk.h>
 
 namespace gr {
   namespace lazyviterbi {
 
-    class viterbi_impl : public viterbi
+    class viterbi_volk_branch_impl : public viterbi_volk_branch
     {
       private:
         gr::trellis::fsm d_FSM; //Trellis description
@@ -34,19 +35,33 @@ namespace gr {
         int d_S0;               //Initial state idx (-1 if unknown)
         int d_SK;               //Final state idx (-1 if unknown)
 
+        size_t d_n_metrics;     //Number of branches in a trellis section
+
         //Same as d_FSM.OS(), but re-ordered in the following way:
         //d_ordered_OS[s*I+i] = d_FSM.OS()[d_FSM.PS()[s][i]*I + d_FSM.PI()[s][i]]
         std::vector<int> d_ordered_OS;
+        //Same as d_FSM.PS(), but flattened:
+        //d_ordered_PS[s*I+i] = d_FSM.PS()[s][i]
+        std::vector<int> d_ordered_PS;
+        //Input metrics, ordered as d_ordered_in_k[i] = in_k[d_ordered_OS[i]]
+        float *d_ordered_in_k;
 
         //Store current state metrics
-        std::vector<float> d_alpha_prev;
+        float *d_alpha_curr;
         //Store next state metrics
-        std::vector<float> d_alpha_curr;
+        float *d_alpha_prev;
+        //Store next state candidate metrics
+        float *d_can_metrics;
         //Traceback vector
-        std::vector<int> d_trace;
+        uint32_t *d_trace;
+
+      protected:
+        void compute_all_metrics(const float *alpha_prev, const float *in_k,
+            float *can_metrics);
 
       public:
-        viterbi_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
+        viterbi_volk_branch_impl(const gr::trellis::fsm &FSM, int K, int S0, int SK);
+        ~viterbi_volk_branch_impl();
 
         gr::trellis::fsm FSM() const  { return d_FSM; }
         int K()  const { return d_K; }
@@ -61,7 +76,7 @@ namespace gr {
         int general_work(int noutput_items, gr_vector_int &ninput_items,
             gr_vector_const_void_star &input_items, gr_vector_void_star &output_items);
 
-        void viterbi_algorithm(int I, int S, int O, const std::vector<int> &NS,
+        void viterbi_algorithm_volk_branch(int I, int S, int O, const std::vector<int> &NS,
             const std::vector<int> &ordered_OS, const std::vector< std::vector<int> > &PS,
             const std::vector< std::vector<int> > &PI, int K, int S0, int SK,
             const float *in, unsigned char *out);
@@ -70,5 +85,5 @@ namespace gr {
   } // namespace lazyviterbi
 } // namespace gr
 
-#endif /* INCLUDED_LAZYVITERBI_VITERBI_IMPL_H */
+#endif /* INCLUDED_LAZYVITERBI_VITERBI_VOLK_BRANCH_IMPL_H */
 

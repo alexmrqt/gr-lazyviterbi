@@ -83,6 +83,8 @@ def main():
     EbN0dB = numpy.linspace(0, 10, 11)
     bitrate_trellis_viterbi = numpy.zeros(len(EbN0dB))
     bitrate_viterbi = numpy.zeros(len(EbN0dB))
+    bitrate_viterbi_vb = numpy.zeros(len(EbN0dB))
+    bitrate_viterbi_vs = numpy.zeros(len(EbN0dB))
     bitrate_lazy = numpy.zeros(len(EbN0dB))
     bitrate_dynamic = numpy.zeros(len(EbN0dB))
 
@@ -94,6 +96,8 @@ def main():
 
     trellis_vit_dec = trellis.viterbi_b(trellis.fsm(fsm), pkt_len, 0, -1)
     vit_dec = lv.viterbi(trellis.fsm(fsm), pkt_len, 0, -1)
+    vit_vb_dec = lv.viterbi_volk_branch(trellis.fsm(fsm), pkt_len, 0, -1)
+    vit_vs_dec = lv.viterbi_volk_state(trellis.fsm(fsm), pkt_len, 0, -1)
     dyn_vit_dec = lv.dynamic_viterbi(trellis.fsm(fsm), pkt_len, 0, -1)
     lazy_dec = lv.lazy_viterbi(trellis.fsm(fsm), pkt_len, 0, -1)
 
@@ -126,6 +130,26 @@ def main():
         bitrate_viterbi[i] = pkt_len*nb_pkt/elapsed_time
         print("Bitrate Viterbi (gr-lazyviterbi):\t" + str(bitrate_viterbi[i]))
 
+        #Viterbi volk branch
+        tb = ber_vs_ebn0_awgn(metrics, vit_vb_dec)
+
+        start_time=time.time()
+        tb.run()
+        elapsed_time=time.time() - start_time
+
+        bitrate_viterbi_vb[i] = pkt_len*nb_pkt/elapsed_time
+        print("Bitrate Viterbi volk branch:\t" + str(bitrate_viterbi_vb[i]))
+
+        #Viterbi volk state
+        tb = ber_vs_ebn0_awgn(metrics, vit_vs_dec)
+
+        start_time=time.time()
+        tb.run()
+        elapsed_time=time.time() - start_time
+
+        bitrate_viterbi_vs[i] = pkt_len*nb_pkt/elapsed_time
+        print("Bitrate Viterbi volk state:\t" + str(bitrate_viterbi_vs[i]))
+
         #Lazy Viterbi
         tb = ber_vs_ebn0_awgn(metrics, lazy_dec)
 
@@ -151,6 +175,8 @@ def main():
     #Plot results
     plt.plot(EbN0dB, bitrate_trellis_viterbi, '-*', label="Viterbi (gr-trellis)")
     plt.plot(EbN0dB, bitrate_viterbi, '-+', label="Viterbi")
+    plt.plot(EbN0dB, bitrate_viterbi_vb, '-+', label="Viterbi volk branch")
+    plt.plot(EbN0dB, bitrate_viterbi_vs, '-d', label="Viterbi volk state")
     plt.plot(EbN0dB, bitrate_lazy, '-x', label="Lazy Viterbi")
     plt.plot(EbN0dB, bitrate_dynamic, '-o', label="Dynamique")
 

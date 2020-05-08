@@ -17,9 +17,10 @@
 # along with GNU Radio; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
-
 install(FILES
     lazyviterbi_viterbi.block.yml
     lazyviterbi_lazy_viterbi.block.yml
-    lazyviterbi_dynamic_viterbi.block.yml DESTINATION share/gnuradio/grc/blocks
+    lazyviterbi_dynamic_viterbi.block.yml
+    lazyviterbi_viterbi_volk_branch.block.yml
+    lazyviterbi_viterbi_volk_state.block.yml DESTINATION share/gnuradio/grc/blocks
 )
