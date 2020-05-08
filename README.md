@@ -19,6 +19,31 @@ This implementation should be more suited to trellis having more transitions bet
 * Viterbi Volk (state parallelization): implements the classical Viterbi algorithm, but uses Volk to enable parallell processing of states (Add-Compare-Select is done on multiple states at the same time).
 This implementation should be more suited to trellis having states than transitions between states (it is the case of most error correcting codes).
 
+# Installation
+
+## Requirements
+
+`gr-lazyviterbi` depends on:
+* GNURadio >= 3.8.0
+* Volk >= 2.0.0
+* cmake (same version as for GNURadio 3.8)
+
+## Under linux
+
+Within `gr-lazyviterbi` directory, and as a regular user:
+```sh
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make -j4
+```
+A root:
+```sh
+# make install
+```
+
+# Examples
+
 One GRC example is provided in the examples/ directory:
 * `simple.grc` simple example showing how each decoder should be use in a typical flowgraph. You will have to populate the variable `base_dir`, and put the full path to the source folder of `gr-lazyviterbi` (for example: `/usr/local/src/gr-lazyviterbi`).
 
@@ -34,6 +59,8 @@ channel with the (229,159) convolutional code.
 The convolutional code used in this script can easily be changed by supplying its
 treillis in a FSM file (see gr-trellis documentation), to see what kind of speedup
 can be expected for a particular use case.
+
+# Performance
 
 There is no best implementation. Performance depends on the trellis, the SNR of the transmission, the processor in your computer.
 Bellow is bitrate comparisons for some trellis, using a computer equiped with an Intel core i5 775 (see `examples/bitrate_vs_ebn0.py` for details on simulation parameters).
